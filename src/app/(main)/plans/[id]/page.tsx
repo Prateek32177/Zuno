@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, ChevronLeft, Heart, Info, Instagram, Users } from 'lucide-react'
+import {  Users, Calendar, Heart, ChevronLeft, Info, Instagram } from 'lucide-react'
 import Image from 'next/image'
 import { BottomNav } from '@/components/BottomNav'
 import { LocationLink } from '@/components/LocationLink'
@@ -45,7 +45,7 @@ export default function PlanPage({ params }: { params: { id: string } }) {
   }, [params.id])
 
   const participantCount = useMemo(() => ((plan?.participants || []).filter((p: any) => p.status === 'joined').length || 0) + 1, [plan])
-  const isHost = (plan as any)?.current_user_id && (plan as any).current_user_id === plan.host_id
+  const isHost = (plan as any)?.current_user_id && (plan as any).current_user_id === plan?.host_id
 
   const join = async () => {
     const resp = await fetch(`/api/plans/${params.id}/join`, { method: 'POST' })
