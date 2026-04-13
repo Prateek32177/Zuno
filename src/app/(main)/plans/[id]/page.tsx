@@ -87,65 +87,131 @@ export default function PlanPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="pb-28">
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b app-card p-3">
-        <button onClick={() => router.back()} className="h-8 w-8 rounded-full border app-card inline-flex items-center justify-center"><ChevronLeft className="h-4 w-4" /></button>
-        <p className="text-sm font-semibold">Plan</p>
-        <button onClick={toggleSave} className="h-8 w-8 rounded-full border app-card inline-flex items-center justify-center">
-          <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
+      {/* Header */}
+      <div className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 app-card px-4 py-3 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 shadow-brand">
+        <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-gray-200 dark:border-gray-700 app-card inline-flex items-center justify-center transition-all hover:shadow-brand-md hover:scale-110">
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <p className="text-sm font-bold">Plan Details</p>
+        <button
+          onClick={toggleSave}
+          className={`h-10 w-10 rounded-full border inline-flex items-center justify-center transition-all duration-200 ${
+            isSaved
+              ? 'bg-red-500/20 border-red-500/50 shadow-brand-md scale-110'
+              : 'border-gray-200 dark:border-gray-700 app-card hover:shadow-brand-md'
+          }`}
+        >
+          <Heart className={`h-5 w-5 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
         </button>
       </div>
 
-      <div className="relative h-72 w-full overflow-hidden">
-        <Image src={plan.image_url || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1200'} alt={plan.title} fill className="object-cover" />
+      {/* Image */}
+      <div className="relative h-80 w-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
+        <Image
+          src={plan.image_url || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1200'}
+          alt={plan.title}
+          fill
+          className="object-cover transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
 
-      <div className="mx-auto max-w-md space-y-4 px-4 py-4">
+      {/* Content */}
+      <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
+        {/* Title */}
         <div>
-          <h1 className="text-xl font-bold">{plan.title}</h1>
-          <p className="text-sm app-muted">{plan.city || 'General'} · {plan.location_name}</p>
+          <h1 className="text-3xl font-black leading-tight tracking-tight">{plan.title}</h1>
+          <p className="mt-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            {plan.city || 'General'} · {plan.location_name}
+          </p>
         </div>
 
-        <div className="rounded-2xl border app-card p-3 text-sm">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="font-semibold">Organizer</span>
+        {/* Organizer Card */}
+        <div className="rounded-3xl border border-gray-200 dark:border-gray-700 app-card p-4 shadow-brand">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">Organizer</p>
+              <p className="mt-2 text-base font-bold">{plan.host?.name || 'Host'}</p>
+              {plan.host?.instagram_url && (
+                <a href={plan.host.instagram_url} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-pink-500 text-sm font-semibold hover:underline">
+                  <Instagram className="h-4 w-4" /> Instagram
+                </a>
+              )}
+            </div>
             <TrustBadge score={plan.host?.reliability_score ?? 100} />
           </div>
-          <p className="font-medium">{plan.host?.name || 'Host'}</p>
-          {plan.host?.instagram_url && (
-            <a href={plan.host.instagram_url} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-pink-500 text-xs">
-              <Instagram className="h-3 w-3" /> Instagram profile
-            </a>
-          )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="rounded-xl border app-card p-3"><p className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" /> {planDate.toLocaleString()}</p></div>
-          <div className="rounded-xl border app-card p-3"><p className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {participantCount}/{plan.max_people}</p></div>
-          <div className="rounded-xl border app-card p-3"><LocationLink location={plan.location_name} googleMapsLink={plan.google_maps_link} /></div>
-          <div className="rounded-xl border app-card p-3"><p className="inline-flex items-center gap-1"><Info className="h-4 w-4" /> Host included in count</p></div>
+        {/* Info Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/20 p-4 shadow-brand">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Date & Time</p>
+            <p className="mt-2 font-bold text-sm">{planDate.toLocaleDateString()}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{planDate.toLocaleTimeString()}</p>
+          </div>
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/30 dark:to-purple-900/20 p-4 shadow-brand">
+            <p className="text-xs font-bold uppercase tracking-widest text-purple-700 dark:text-purple-400">Participants</p>
+            <p className="mt-2 font-bold text-sm">{participantCount}/{plan.max_people}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{plan.max_people - participantCount} spots left</p>
+          </div>
         </div>
 
+        {/* Location & Info */}
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/30 dark:to-orange-900/20 p-4 shadow-brand">
+          <div className="flex items-center justify-between gap-2">
+            <LocationLink location={plan.location_name} googleMapsLink={plan.google_maps_link} />
+          </div>
+          <p className="mt-3 text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+            <Info className="h-3.5 w-3.5" /> Host is included in participant count
+          </p>
+        </div>
+
+        {/* Payment Option */}
         {plan.show_payment_options && plan.host?.gpay_link && (
-          <a href={plan.host.gpay_link} target="_blank" rel="noreferrer" className="block rounded-xl border app-card p-3 text-sm font-medium">
-            Pay organizer (GPay)
+          <a href={plan.host.gpay_link} target="_blank" rel="noreferrer" className="block rounded-2xl border border-gray-200 dark:border-gray-700 app-card p-4 text-sm font-bold hover:shadow-brand-md transition-all">
+            💳 Pay Organizer (GPay)
           </a>
         )}
 
+        {/* WhatsApp */}
         {plan.whatsapp_link && (
-          <a href={plan.whatsapp_link} target="_blank" rel="noreferrer" className="block rounded-xl bg-green-500 px-4 py-3 text-center text-sm font-semibold text-white">
-            Open WhatsApp group
+          <a
+            href={plan.whatsapp_link}
+            target="_blank"
+            rel="noreferrer"
+            className="block rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-4 text-center text-sm font-bold text-white shadow-brand-md hover:shadow-brand-lg transition-all hover:scale-105"
+          >
+            💬 Open WhatsApp Group
           </a>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
           {isHost ? (
-            <button disabled className="rounded-xl border app-card px-4 py-2.5 text-sm font-semibold app-muted">You are the organizer</button>
+            <button disabled className="rounded-2xl border border-gray-200 dark:border-gray-700 app-card px-4 py-3 text-sm font-bold text-gray-400 cursor-not-allowed">
+              You&apos;re the Host
+            </button>
           ) : !isJoined ? (
-            <button onClick={join} className="rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white">Join plan</button>
+            <button
+              onClick={join}
+              className="rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-sm font-bold text-white shadow-brand-md hover:shadow-brand-lg transition-all hover:scale-105"
+            >
+              Join Plan
+            </button>
           ) : (
-            <button onClick={leave} className="rounded-xl border app-card px-4 py-2.5 text-sm font-semibold">Leave anytime</button>
+            <button
+              onClick={leave}
+              className="rounded-2xl border border-gray-200 dark:border-gray-700 app-card px-4 py-3 text-sm font-bold hover:shadow-brand-md transition-all"
+            >
+              Leave Plan
+            </button>
           )}
-          <button onClick={() => router.push('/feed')} className="rounded-xl border app-card px-4 py-2.5 text-sm font-semibold">Back to feed</button>
+          <button
+            onClick={() => router.push('/feed')}
+            className="rounded-2xl border border-gray-200 dark:border-gray-700 app-card px-4 py-3 text-sm font-bold hover:shadow-brand-md transition-all"
+          >
+            Back to Feed
+          </button>
         </div>
       </div>
 

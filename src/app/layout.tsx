@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-white dark:bg-gray-950">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} bg-white dark:bg-gray-950`}>
         <main className="min-h-screen">{children}</main>
       </body>
     </html>
