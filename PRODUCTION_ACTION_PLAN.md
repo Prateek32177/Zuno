@@ -12,6 +12,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_ANON_KEY
 Run both migrations in Supabase SQL editor (in this order):
 1. `supabase/migrations/20260413000000_zuno_mvp_schema.sql`
 2. `supabase/migrations/20260413010000_add_google_maps_link.sql`
+3. `supabase/migrations/20260413020000_hardening_auth_and_maps.sql`
 
 ## 3) Supabase Auth provider setup (required)
 In Supabase Dashboard → Authentication → Providers:
@@ -56,3 +57,12 @@ In Supabase Dashboard → Authentication → URL configuration:
 - No horizontal top scrollbar in feed categories (wrapped chips).
 - Cleaner profile layout and settings access from settings page only.
 - Meetup input includes Google Maps link for direct map opening in feed/cards.
+
+
+## 8) If you still see `google_maps_link` schema cache error
+- Run: `NOTIFY pgrst, 'reload schema';` in Supabase SQL editor.
+- Re-open API request after 5-10 seconds.
+- Confirm column exists with:
+```sql
+select column_name from information_schema.columns where table_schema='public' and table_name='plans';
+```
