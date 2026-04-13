@@ -28,10 +28,11 @@ export interface Plan {
   status: PlanStatus
   approval_mode: boolean
   female_only: boolean
+  estimated_cost?: number | null
+  participant_count?: number
   created_at: string
   host?: User
   participants?: PlanParticipant[]
-  participant_count?: number
 }
 
 export interface PlanParticipant {

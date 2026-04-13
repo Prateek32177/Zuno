@@ -1,9 +1,11 @@
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { updateReliabilityScore } from '@/lib/trust'
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const supabase = createClient()
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
   const { attendedUserIds }: { attendedUserIds: string[] } = await request.json()
 
   for (const userId of attendedUserIds || []) {
