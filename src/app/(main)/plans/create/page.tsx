@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/BottomNav'
 import { CATEGORY_META } from '@/lib/categories'
 import { CategoryIcon } from '@/components/CategoryIcon'
 import type { PlanCategory } from '@/lib/types'
+import { DEFAULT_LAUNCH_CITY, INDIA_HIGH_POTENTIAL_CITIES } from '@/lib/cities'
 
 const steps = ['Details', 'Meetup', 'Settings', 'Review']
 
@@ -18,7 +19,7 @@ export default function CreatePlanPage() {
     title: '',
     description: '',
     category: 'other' as PlanCategory,
-    city: '',
+    city: DEFAULT_LAUNCH_CITY,
     location_name: '',
     google_maps_link: '',
     datetime: '',
@@ -89,7 +90,11 @@ export default function CreatePlanPage() {
           <div className="space-y-3 rounded-2xl border app-card p-4">
             <input name="title" value={formData.title} onChange={handleChange} placeholder="Plan title" className="w-full rounded-xl border app-card px-3 py-2.5 text-sm" required />
             <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Plan details" className="w-full rounded-xl border app-card px-3 py-2.5 text-sm" rows={3} required />
-            <input name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full rounded-xl border app-card px-3 py-2.5 text-sm" required />
+            <select name="city" value={formData.city} onChange={handleChange} className="w-full rounded-xl border app-card px-3 py-2.5 text-sm" required>
+              {INDIA_HIGH_POTENTIAL_CITIES.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
             <div className="grid grid-cols-2 gap-2">
               {(Object.keys(CATEGORY_META) as PlanCategory[]).map((cat) => (
                 <button key={cat} type="button" onClick={() => setFormData((prev) => ({ ...prev, category: cat }))} className={`rounded-xl border px-3 py-2 text-left text-xs ${formData.category === cat ? 'bg-orange-500 text-white border-orange-500' : 'app-card'}`}>

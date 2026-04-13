@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PlanCard } from '@/components/PlanCard'
 import { BottomNav } from '@/components/BottomNav'
 import { Search, Clock3, MapPin } from 'lucide-react'
@@ -8,12 +8,13 @@ import type { Plan, PlanCategory } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/categories'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { CategoryIcon } from '@/components/CategoryIcon'
+import { DEFAULT_LAUNCH_CITY, INDIA_HIGH_POTENTIAL_CITIES } from '@/lib/cities'
 
 export default function FeedPage() {
   const [plans, setPlans] = useState<Plan[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<PlanCategory | null>(null)
-  const [selectedCity, setSelectedCity] = useState<string>('All')
+  const [selectedCity, setSelectedCity] = useState<string>(DEFAULT_LAUNCH_CITY)
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -35,11 +36,15 @@ export default function FeedPage() {
   }, [])
 
   const categories = Object.keys(CATEGORY_META) as PlanCategory[]
-  const cities = useMemo(() => ['All', ...Array.from(new Set(plans.map((p) => p.city || 'General')))], [plans])
 
   const filteredPlans = plans
     .filter((p) => (selectedCategory ? p.category === selectedCategory : true))
-    .filter((p) => (selectedCity === 'All' ? true : (p.city || 'General') === selectedCity))
+    .filter((p) => {
+      const city = (p.city || '').toLowerCase().trim()
+      const location = (p.location_name || '').toLowerCase()
+      const target = selectedCity.toLowerCase()
+      return city === target || location.includes(target)
+    })
     .sort((a, b) => +new Date(a.datetime) - +new Date(b.datetime))
 
   const nextPlan = filteredPlans.find((p) => +new Date(p.datetime) > Date.now())
@@ -51,7 +56,7 @@ export default function FeedPage() {
           <div className="mb-3 flex items-center justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.22em] app-muted">Zuno</p>
-              <h1 className="text-lg font-bold">City plans</h1>
+              <h1 className="text-lg font-bold">Fast join feed</h1>
             </div>
             <div className="flex items-center gap-2">
               <button className="h-8 w-8 rounded-full border app-card inline-flex items-center justify-center">
@@ -65,22 +70,16 @@ export default function FeedPage() {
             <label className="inline-flex w-full items-center gap-2 text-xs app-muted">
               <MapPin className="h-3.5 w-3.5" />
               <span>City:</span>
-              <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full bg-transparent text-sm font-medium outline-none"
-              >
-                {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
+              <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="w-full bg-transparent text-sm font-medium outline-none">
+                {INDIA_HIGH_POTENTIAL_CITIES.map((city) => (
+                  <option key={city} value={city}>{city}</option>
                 ))}
               </select>
             </label>
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            <button onClick={() => setSelectedCategory(null)} className={`px-2.5 py-1 rounded-full text-[11px] font-medium border ${selectedCategory === null ? 'bg-black text-white' : 'app-card'}`}>All</button>
+            <button onClick={() => setSelectedCategory(null)} className={`px-2.5 py-1 rounded-full text-[11px] font-medium border ${selectedCategory === null ? 'bg-black text-white' : 'app-card'}`}>All Activities</button>
             {categories.map((cat) => (
               <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-2.5 py-1 rounded-full text-[11px] font-medium border inline-flex items-center gap-1 ${selectedCategory === cat ? 'bg-orange-500 text-white border-orange-500' : 'app-card'}`}>
                 <CategoryIcon icon={CATEGORY_META[cat].icon} className="h-3 w-3" /> {CATEGORY_META[cat].label}
@@ -93,7 +92,7 @@ export default function FeedPage() {
       <div className="mx-auto max-w-md px-4 py-4">
         {nextPlan && (
           <div className="mb-3 rounded-2xl border app-card p-3 text-xs app-muted">
-            <p className="inline-flex items-center gap-1 font-semibold"><Clock3 className="h-3 w-3" /> Happening next in {selectedCity === 'All' ? 'all cities' : selectedCity}</p>
+            <p className="inline-flex items-center gap-1 font-semibold"><Clock3 className="h-3 w-3" /> Happening next in {selectedCity}</p>
             <p className="mt-1 text-sm font-medium">{nextPlan.title} · {new Date(nextPlan.datetime).toLocaleString()}</p>
           </div>
         )}
@@ -101,8 +100,8 @@ export default function FeedPage() {
           <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-64 rounded-3xl app-card border" />)}</div>
         ) : filteredPlans.length === 0 ? (
           <div className="py-12 text-center">
-            <h3 className="mb-1 text-base font-semibold">No plans yet</h3>
-            <p className="mb-5 text-sm app-muted">Try another city or category.</p>
+            <h3 className="mb-1 text-base font-semibold">No plans yet in {selectedCity}</h3>
+            <p className="mb-5 text-sm app-muted">Create first plan to activate this city cluster.</p>
             <a href="/plans/create" className="inline-block rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-5 py-2 text-sm font-semibold text-white">Create Plan</a>
           </div>
         ) : (
