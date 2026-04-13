@@ -28,34 +28,31 @@ export default function MyPlansPage() {
   }, [])
 
   return (
-    <div className="pb-24 pt-4">
-      <div className="mx-auto max-w-2xl px-4 mb-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">Your Collection</p>
-        <h1 className="text-3xl font-black tracking-tight mt-1">Saved Plans</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Plans you loved, all in one place</p>
+    <div className="pb-24 pt-3">
+      <div className="mx-auto max-w-2xl px-4 mb-5">
+        <h1 className="text-2xl font-bold">Saved</h1>
       </div>
 
       <div className="mx-auto max-w-2xl px-4">
         {loading ? (
-          <div className="space-y-4 pt-2">
+          <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-3xl app-card border border-gray-200 dark:border-gray-700 h-72 animate-pulse" />
+              <div key={i} className="rounded-lg h-48 bg-gray-100 dark:bg-gray-900 animate-pulse" />
             ))}
           </div>
         ) : plans.length === 0 ? (
-          <div className="rounded-3xl border border-gray-200 dark:border-gray-700 app-card p-12 text-center">
-            <div className="text-5xl mb-4">💔</div>
-            <p className="font-black text-xl">No saved plans yet</p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Heart your favorite plans to build your collection.</p>
+          <div className="text-center py-16">
+            <p className="font-semibold mb-2">No saved plans</p>
+            <p className="text-xs app-muted mb-6">Heart plans to save them here</p>
             <a
               href="/feed"
-              className="mt-6 inline-block rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm font-bold text-white shadow-brand hover:shadow-brand-md transition-all hover:scale-105"
+              className="inline-block rounded-lg bg-gray-900 dark:bg-white text-white dark:text-black px-4 py-2 text-xs font-semibold"
             >
               Explore Plans
             </a>
           </div>
         ) : (
-          <div className="grid gap-4 pt-2">
+          <div className="space-y-3">
             {plans.map((plan) => (
               <PlanCard key={plan.id} plan={plan} />
             ))}

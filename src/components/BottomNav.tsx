@@ -15,31 +15,15 @@ export function BottomNav() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-      <div className="mx-auto px-4 pb-2 max-w-2xl">
-        <div className="flex max-w-md mx-auto items-center justify-between rounded-3xl border border-gray-200 dark:border-gray-700 app-card px-2 py-2 shadow-brand-lg backdrop-blur-xl">
+    <nav className="fixed bottom-0 left-0 right-0 z-40" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+      <div className="mx-auto max-w-2xl px-4 pb-2">
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-800 app-card px-3 py-2.5">
           {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-col items-center flex-1 transition-all duration-200"
-            >
-              <div
-                className={`rounded-2xl p-3 transition-all duration-200 ${
-                  item.active
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-brand-md scale-110'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
+            <Link key={item.href} href={item.href} className="flex flex-col items-center flex-1 py-1">
+              <div className={`p-2 transition-colors ${item.active ? 'text-gray-900 dark:text-white' : 'app-muted'}`}>
                 <item.icon className="h-5 w-5" />
               </div>
-              <span
-                className={`mt-2 text-xs font-bold transition-colors duration-200 ${
-                  item.active
-                    ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}
-              >
+              <span className={`text-xs font-medium mt-0.5 ${item.active ? 'text-gray-900 dark:text-white' : 'app-muted'}`}>
                 {item.label}
               </span>
             </Link>
@@ -47,9 +31,10 @@ export function BottomNav() {
 
           <Link
             href="/plans/create"
-            className="absolute left-1/2 -translate-x-1/2 -top-6 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white shadow-brand-lg hover:shadow-brand-lg transition-all duration-200 hover:scale-110"
+            className="absolute left-1/2 -translate-x-1/2 -top-5 rounded-full p-3 transition-colors text-white"
+            style={{ backgroundColor: 'var(--brand)' }}
           >
-            <Plus className="h-6 w-6" strokeWidth={2.5} />
+            <Plus className="h-5 w-5" strokeWidth={2.5} />
           </Link>
         </div>
       </div>
