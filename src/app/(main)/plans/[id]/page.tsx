@@ -15,6 +15,7 @@ export default function PlanPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true)
   const [isJoined, setIsJoined] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const load = async () => {
     setLoading(true)
@@ -22,8 +23,12 @@ export default function PlanPage({ params }: { params: { id: string } }) {
     if (response.ok) {
       const data = await response.json()
       setPlan(data)
+      setLoadError(null)
       const mine = (data.participants || []).some((p: any) => p.user_id === data.current_user_id && p.status === 'joined')
       setIsJoined(mine)
+    } else {
+      const err = await response.json().catch(() => ({ error: 'Plan not found' }))
+      setLoadError(err.error || 'Plan not found')
     }
 
     const favResp = await fetch('/api/favorites')
@@ -67,7 +72,16 @@ export default function PlanPage({ params }: { params: { id: string } }) {
     if (resp.ok) setIsSaved(!isSaved)
   }
 
-  if (loading || !plan) return <div className="min-h-screen pb-24" />
+  if (loading) return <div className="min-h-screen pb-24" />
+
+  if (!plan) {
+    return (
+      <div className="min-h-screen px-4 py-20 text-center">
+        <p className="text-base font-semibold">{loadError || 'Plan not found'}</p>
+        <button onClick={load} className="mt-4 rounded-xl border app-card px-4 py-2 text-sm font-medium">Retry</button>
+      </div>
+    )
+  }
 
   const planDate = new Date(plan.datetime)
 

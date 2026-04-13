@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PlanCard } from '@/components/PlanCard'
 import { BottomNav } from '@/components/BottomNav'
 import { Search, Clock3, MapPin } from 'lucide-react'
@@ -36,6 +36,13 @@ export default function FeedPage() {
   }, [])
 
   const categories = Object.keys(CATEGORY_META) as PlanCategory[]
+  const citiesWithPlans = useMemo(() => Array.from(new Set(plans.map((p) => p.city).filter(Boolean))) as string[], [plans])
+
+  useEffect(() => {
+    if (!plans.length) return
+    const hasCurrentCityPlans = plans.some((p) => (p.city || '').toLowerCase() === selectedCity.toLowerCase())
+    if (!hasCurrentCityPlans && citiesWithPlans.length) setSelectedCity(citiesWithPlans[0])
+  }, [plans, selectedCity, citiesWithPlans])
 
   const filteredPlans = plans
     .filter((p) => (selectedCategory ? p.category === selectedCategory : true))
@@ -47,7 +54,8 @@ export default function FeedPage() {
     })
     .sort((a, b) => +new Date(a.datetime) - +new Date(b.datetime))
 
-  const nextPlan = filteredPlans.find((p) => +new Date(p.datetime) > Date.now())
+  const displayPlans = filteredPlans.length ? filteredPlans : [...plans].sort((a, b) => +new Date(a.datetime) - +new Date(b.datetime))
+  const nextPlan = displayPlans.find((p) => +new Date(p.datetime) > Date.now())
 
   return (
     <div className="pb-24 pt-2">
@@ -98,14 +106,14 @@ export default function FeedPage() {
         )}
         {loading ? (
           <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-64 rounded-3xl app-card border" />)}</div>
-        ) : filteredPlans.length === 0 ? (
+        ) : displayPlans.length === 0 ? (
           <div className="py-12 text-center">
             <h3 className="mb-1 text-base font-semibold">No plans yet in {selectedCity}</h3>
             <p className="mb-5 text-sm app-muted">Create first plan to activate this city cluster.</p>
             <a href="/plans/create" className="inline-block rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-5 py-2 text-sm font-semibold text-white">Create Plan</a>
           </div>
         ) : (
-          <div className="grid gap-3">{filteredPlans.map((plan) => <PlanCard key={plan.id} plan={plan} />)}</div>
+          <div className="grid gap-3">{displayPlans.map((plan) => <PlanCard key={plan.id} plan={plan} />)}</div>
         )}
       </div>
 
