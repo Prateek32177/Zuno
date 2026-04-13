@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PlanCard } from '@/components/PlanCard'
 import { BottomNav } from '@/components/BottomNav'
-import { Search, Clock3 } from 'lucide-react'
+import { Search, Clock3, MapPin } from 'lucide-react'
 import type { Plan, PlanCategory } from '@/lib/types'
 import { CATEGORY_META } from '@/lib/categories'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -61,12 +61,22 @@ export default function FeedPage() {
             </div>
           </div>
 
-          <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
-            {cities.map((city) => (
-              <button key={city} onClick={() => setSelectedCity(city)} className={`px-2.5 py-1 rounded-full text-[11px] font-medium border whitespace-nowrap ${selectedCity === city ? 'bg-black text-white' : 'app-card'}`}>
-                {city}
-              </button>
-            ))}
+          <div className="mb-2 rounded-xl border app-card px-2 py-1.5">
+            <label className="inline-flex w-full items-center gap-2 text-xs app-muted">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>City:</span>
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="w-full bg-transparent text-sm font-medium outline-none"
+              >
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           <div className="flex flex-wrap gap-1.5">
@@ -83,7 +93,7 @@ export default function FeedPage() {
       <div className="mx-auto max-w-md px-4 py-4">
         {nextPlan && (
           <div className="mb-3 rounded-2xl border app-card p-3 text-xs app-muted">
-            <p className="inline-flex items-center gap-1 font-semibold "><Clock3 className="h-3 w-3" /> Happening next</p>
+            <p className="inline-flex items-center gap-1 font-semibold"><Clock3 className="h-3 w-3" /> Happening next in {selectedCity === 'All' ? 'all cities' : selectedCity}</p>
             <p className="mt-1 text-sm font-medium">{nextPlan.title} · {new Date(nextPlan.datetime).toLocaleString()}</p>
           </div>
         )}
