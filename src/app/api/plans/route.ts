@@ -2,7 +2,6 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { canonicalizeCity } from '@/lib/cities'
-import { dbSetupRequiredResponse, isMissingRelationError } from '@/lib/supabase/errors'
 
 export async function GET() {
   const cookieStore = await cookies()
@@ -16,10 +15,7 @@ export async function GET() {
     .order('datetime', { ascending: true })
     .limit(50)
 
-  if (error) {
-    if (isMissingRelationError(error, 'plans')) return NextResponse.json([])
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const plans = (data || []).filter((plan: any) => {
     if (plan.visibility !== 'private') return true
@@ -99,9 +95,6 @@ export async function POST(request: Request) {
     error = retry.error
   }
 
-  if (error) {
-    if (isMissingRelationError(error, 'plans')) return dbSetupRequiredResponse()
-    return NextResponse.json({ error: error.message }, { status: 400 })
-  }
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json(data, { status: 201 })
 }
