@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { dbSetupRequiredResponse, isMissingRelationError } from '@/lib/supabase/errors'
 
 export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params
@@ -15,10 +14,7 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
     .eq('id', id)
     .single()
 
-  if (planError || !plan) {
-    if (isMissingRelationError(planError, 'plans')) return dbSetupRequiredResponse()
-    return NextResponse.json({ error: planError?.message || 'Plan not found' }, { status: 404 })
-  }
+  if (planError || !plan) return NextResponse.json({ error: planError?.message || 'Plan not found' }, { status: 404 })
 
   const { data: participants } = await supabase
     .from('plan_participants')
@@ -41,8 +37,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const { data: auth } = await supabase.auth.getUser()
   if (!auth.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: existing, error: existingError } = await supabase.from('plans').select('host_id').eq('id', id).single()
-  if (isMissingRelationError(existingError, 'plans')) return dbSetupRequiredResponse()
+  const { data: existing } = await supabase.from('plans').select('host_id').eq('id', id).single()
   if (!existing) return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
   if (existing.host_id !== auth.user.id) return NextResponse.json({ error: 'Only host can edit this plan' }, { status: 403 })
 
@@ -82,8 +77,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
   const { data: auth } = await supabase.auth.getUser()
   if (!auth.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: existing, error: existingError } = await supabase.from('plans').select('host_id').eq('id', id).single()
-  if (isMissingRelationError(existingError, 'plans')) return dbSetupRequiredResponse()
+  const { data: existing } = await supabase.from('plans').select('host_id').eq('id', id).single()
   if (!existing) return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
   if (existing.host_id !== auth.user.id) return NextResponse.json({ error: 'Only host can delete this plan' }, { status: 403 })
 
