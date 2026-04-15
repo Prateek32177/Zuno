@@ -226,13 +226,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-          <p className="mb-2 text-xs font-semibold text-gray-600">TRUST SCORE</p>
-          <div className="flex justify-center">
-            <TrustBadge score={user.reliability_score} />
-          </div>
-        </div>
-
         {isOwnProfile && (
           <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-[0_4px_20px_rgba(20,20,20,0.06)]">
             <div className="flex items-center justify-between">
