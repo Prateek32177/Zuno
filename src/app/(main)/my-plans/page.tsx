@@ -7,6 +7,7 @@ import type { Plan } from '@/lib/types'
 import { useCity } from '@/components/CityContext'
 import { normalizeCityKey } from '@/lib/cities'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from '@/components/ui/toast'
 
 type PlanView = 'upcoming' | 'past' | 'favorites' | 'hosted'
 
@@ -72,7 +73,7 @@ export default function MyPlansPage() {
   const loadRequests = async (planId: string) => {
     const res = await fetch(`/api/plans/${planId}/requests`)
     const data = await res.json()
-    if (!res.ok) return alert(data.error || 'Unable to load requests')
+    if (!res.ok) return toast.error('Unable to load requests', { description: data.error || 'Please try again.' })
     setRequestsByPlan((prev) => ({ ...prev, [planId]: data || [] }))
   }
 
@@ -83,7 +84,7 @@ export default function MyPlansPage() {
       body: JSON.stringify({ requestUserId }),
     })
     const data = await res.json()
-    if (!res.ok) return alert(data.error || `Unable to ${action}`)
+    if (!res.ok) return toast.error(`Unable to ${action}`, { description: data.error || 'Please try again.' })
     await loadRequests(planId)
   }
 

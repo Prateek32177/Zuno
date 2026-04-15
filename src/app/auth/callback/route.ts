@@ -19,6 +19,7 @@ export async function GET(request: Request) {
       id: user.id,
       name: user.user_metadata?.name || user.email?.split('@')[0] || 'Zuno User',
       avatar_url: user.user_metadata?.avatar_url || null,
+      avatar_seed: user.id.replace(/-/g, '').slice(0, 12),
       instagram_handle: null,
       instagram_url: null,
       gpay_link: null,
@@ -26,8 +27,8 @@ export async function GET(request: Request) {
     }
 
     const { error } = await supabase.from('users').upsert(payload)
-    if (error?.message?.includes('instagram_url') || error?.message?.includes('gpay_link') || error?.message?.includes('phone_number')) {
-      const { instagram_url, gpay_link, phone_number, ...fallback } = payload
+    if (error?.message?.includes('instagram_url') || error?.message?.includes('gpay_link') || error?.message?.includes('phone_number') || error?.message?.includes('avatar_seed')) {
+      const { instagram_url, gpay_link, phone_number, avatar_seed, ...fallback } = payload
       await supabase.from('users').upsert(fallback)
     }
 

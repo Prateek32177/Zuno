@@ -3,6 +3,7 @@
 import { Check, X } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PlanParticipant } from '@/lib/types'
+import { toast } from '@/components/ui/toast'
 
 export function ApprovalQueue({ 
   requests, 
@@ -27,7 +28,7 @@ export function ApprovalQueue({
         await onApprove(participantId)
       } catch (error) {
         console.error('Failed to approve:', error)
-        alert('Failed to approve request')
+        toast.error('Failed to approve request')
       }
     } else {
       // Default API call
@@ -40,7 +41,7 @@ export function ApprovalQueue({
         if (!response.ok) throw new Error('Failed to approve')
       } catch (error) {
         console.error('Approve error:', error)
-        alert('Failed to approve request')
+        toast.error('Failed to approve request')
       }
     }
   }
@@ -51,7 +52,7 @@ export function ApprovalQueue({
         await onDecline(participantId)
       } catch (error) {
         console.error('Failed to decline:', error)
-        alert('Failed to decline request')
+        toast.error('Failed to decline request')
       }
     } else {
       // Default API call
@@ -64,7 +65,7 @@ export function ApprovalQueue({
         if (!response.ok) throw new Error('Failed to decline')
       } catch (error) {
         console.error('Decline error:', error)
-        alert('Failed to decline request')
+        toast.error('Failed to decline request')
       }
     }
   }

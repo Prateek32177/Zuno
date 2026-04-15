@@ -2,6 +2,7 @@ export interface User {
   id: string
   name: string
   avatar_url: string | null
+  avatar_seed?: string | null
   instagram_handle: string | null
   instagram_url?: string | null
   gpay_link?: string | null
