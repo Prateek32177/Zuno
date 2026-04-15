@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 import { Mail, Phone, ArrowRight } from 'lucide-react'
+import { toast } from '@/components/ui/toast'
 
 export function LoginForm() {
   const supabase = createClient()
@@ -36,8 +37,8 @@ export function LoginForm() {
     try {
       setLoading(true)
       const { error } = await supabase.auth.signInWithOtp({ phone })
-      if (error) alert(error.message)
-      else alert('OTP sent! Check your messages.')
+      if (error) toast.error('Unable to send OTP', { description: error.message })
+      else toast.success('OTP sent', { description: 'Check your messages.' })
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -53,7 +54,7 @@ export function LoginForm() {
         email,
         password
       })
-      if (error) alert(error.message)
+      if (error) toast.error('Sign in failed', { description: error.message })
       else router.push(searchParams.get('next') || '/feed')
     } catch (error) {
       console.error('Error:', error)

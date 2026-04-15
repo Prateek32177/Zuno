@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { toast } from '@/components/ui/toast'
 import { ChevronLeft } from 'lucide-react'
 import type { Plan } from '@/lib/types'
 
@@ -20,7 +21,7 @@ export default function EditPlanPage() {
       const res = await fetch(`/api/plans/${id}`)
       const data = await res.json()
       if (!res.ok) {
-        alert(data.error || 'Unable to load plan')
+        toast.error('Unable to load plan', { description: data.error || 'Please try again.' })
         router.replace('/my-plans')
         return
       }
@@ -37,8 +38,8 @@ export default function EditPlanPage() {
     const res = await fetch(`/api/plans/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     const data = await res.json()
     setSaving(false)
-    if (!res.ok) return alert(data.error || 'Failed to save plan')
-    alert('Plan updated')
+    if (!res.ok) return toast.error('Failed to save plan', { description: data.error || 'Please try again.' })
+    toast.success('Plan updated')
     router.push('/my-plans')
   }
 
@@ -46,8 +47,8 @@ export default function EditPlanPage() {
     const ok = confirm('Close this plan? It will stop accepting joins.')
     if (!ok) return
     const res = await fetch(`/api/plans/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'completed' }) })
-    if (!res.ok) return alert('Unable to close plan')
-    alert('Plan closed')
+    if (!res.ok) return toast.error('Unable to close plan')
+    toast.success('Plan closed')
     router.push('/my-plans')
   }
 
@@ -55,8 +56,8 @@ export default function EditPlanPage() {
     const ok = confirm('Delete this plan permanently?')
     if (!ok) return
     const res = await fetch(`/api/plans/${id}`, { method: 'DELETE' })
-    if (!res.ok) return alert('Unable to delete plan')
-    alert('Plan deleted')
+    if (!res.ok) return toast.error('Unable to delete plan')
+    toast.success('Plan deleted')
     router.push('/my-plans')
   }
 

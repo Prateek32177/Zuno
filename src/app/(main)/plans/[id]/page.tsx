@@ -2,6 +2,7 @@
 
 import { use, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from '@/components/ui/toast'
 import {  Users, Calendar, Heart, ChevronLeft, Info, Instagram } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -58,7 +59,7 @@ export default function PlanPage({ params }: { params: Promise<{ id: string }> }
     } else {
       const err = await resp.json()
       if (resp.status === 401) return router.push(`/login?next=/plans/${id}`)
-      alert(err.error || 'Unable to join')
+      toast.error('Unable to join', { description: err.error || 'Please try again.' })
     }
   }
 

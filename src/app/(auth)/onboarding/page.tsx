@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from '@/components/ui/toast'
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -39,9 +40,12 @@ export default function OnboardingPage() {
   const submit = async () => {
     const { data } = await supabase.auth.getUser()
     if (!data.user) return
-    if (!name || !gender || !age) return alert('Please fill name, gender and age.')
+    if (!name || !gender || !age) {
+      toast.error('Missing required fields', { description: 'Please fill name, gender and age.' })
+      return
+    }
 
-    await supabase
+    const { error } = await supabase
       .from('users')
       .update({
         name,
@@ -54,6 +58,12 @@ export default function OnboardingPage() {
       })
       .eq('id', data.user.id)
 
+    if (error) {
+      toast.error('Unable to complete onboarding', { description: error.message })
+      return
+    }
+
+    toast.success('Profile saved', { description: 'Welcome to Zuno!' })
     router.replace('/feed')
   }
 

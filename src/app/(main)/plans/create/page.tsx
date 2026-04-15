@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from '@/components/ui/toast'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { BottomNav } from '@/components/BottomNav'
 import { CATEGORY_META } from '@/lib/categories'
@@ -74,7 +75,7 @@ export default function CreatePlanPage() {
         router.push(`/plans/${data.id}`)
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to create plan')
+        toast.error('Failed to create plan', { description: error.error || 'Please try again.' })
       }
     } finally {
       setLoading(false)

@@ -1,23 +1,52 @@
 'use client'
 
 import Link from 'next/link'
-import { LogIn, MapPin, UserCircle2 } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { INDIA_HIGH_POTENTIAL_CITIES } from '@/lib/cities'
 import { useCity } from '@/components/CityContext'
 import { createClient } from '@/lib/supabase/client'
+import { getUserAvatarUrl } from '@/lib/avatar'
 
 const HIDE_TOP_NAV_ROUTES = ['/settings']
+
+type CurrentUser = {
+  id: string
+  avatar_url: string | null
+  avatar_seed: string | null
+}
 
 export function TopNav() {
   const pathname = usePathname()
   const { selectedCity, setSelectedCity } = useCity()
-  const [userId, setUserId] = useState<string | null>(null)
+  const [user, setUser] = useState<CurrentUser | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null))
+
+    const loadUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      const authUser = data.user
+      if (!authUser) {
+        setUser(null)
+        return
+      }
+
+      const { data: profile } = await supabase
+        .from('users')
+        .select('avatar_url, avatar_seed')
+        .eq('id', authUser.id)
+        .single()
+
+      setUser({
+        id: authUser.id,
+        avatar_url: profile?.avatar_url || null,
+        avatar_seed: profile?.avatar_seed || null,
+      })
+    }
+
+    loadUser()
   }, [])
 
   if (HIDE_TOP_NAV_ROUTES.includes(pathname)) return null
@@ -41,21 +70,25 @@ export function TopNav() {
               </select>
             </label>
 
-            {userId ? (
+            {user ? (
               <Link
-                href={`/profile/${userId}`}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] app-card text-[#1a1410]"
+                href={`/profile/${user.id}`}
+                className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-[1.5px] app-card"
                 aria-label="Open profile"
               >
-                <UserCircle2 className="h-5 w-5" />
+                <img
+                  src={getUserAvatarUrl({ avatarUrl: user.avatar_url, avatarSeed: user.avatar_seed, fallbackSeed: user.id })}
+                  alt="Your profile"
+                  className="h-full w-full object-cover"
+                />
               </Link>
             ) : (
               <Link
                 href={`/login?next=${encodeURIComponent(pathname || '/feed')}`}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] app-card text-[#1a1410]"
+                className="inline-flex h-10 items-center justify-center rounded-full border-[1.5px] app-card px-4 text-sm font-semibold text-[#1a1410]"
                 aria-label="Sign in"
               >
-                <LogIn className="h-4 w-4" />
+                Login
               </Link>
             )}
           </div>
