@@ -6,10 +6,9 @@ import PlanDetailClient from "./PlanDetailClient";
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id } = await params;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/plans/${id}`,
-    { cache: "no-store" }
-  );
+const res = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : ""}/api/plans/${id}`, {
+  cache: "no-store",
+});
 
   if (!res.ok) return {};
 
