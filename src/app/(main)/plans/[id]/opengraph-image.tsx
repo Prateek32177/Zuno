@@ -8,7 +8,6 @@ export const size = {
   height: 630,
 };
 
-export const runtime = "edge";
 
 export default async function OG({ params }: any) {
   const { id } = await params;
