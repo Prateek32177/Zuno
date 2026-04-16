@@ -1,24 +1,45 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { Plan } from "@/lib/types";
+import { useState } from "react";
 import {
   Heart,
   CheckCircle2,
   Share2,
   Clock3,
   MapPin,
+  Users,
+  Calendar,
   Lock,
-  ArrowRight,
+  Mountain,
+  Utensils,
+  Music,
+  Bike,
+  Palette,
+  Plane,
+  Trophy,
+  Sparkles,
 } from "lucide-react";
+import { Plan } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/categories";
-import { CategoryIcon } from "./CategoryIcon";
-import { useState } from "react";
-import { AvatarStack } from "./AvatarStack";
 
+/* ---------- ICON MAP ---------- */
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  mountain: Mountain,
+  utensils: Utensils,
+  music: Music,
+  bike: Bike,
+  palette: Palette,
+  plane: Plane,
+  trophy: Trophy,
+  sparkles: Sparkles,
+};
+
+/* ---------- MAIN ---------- */
 export function PlanCard({
   plan,
   onToggleFavorite,
-  isAuthed = true,
+  isAuthed,
 }: {
   plan: Plan;
   onToggleFavorite?: () => void;
@@ -29,19 +50,31 @@ export function PlanCard({
   if (!plan) return null;
 
   const planDate = plan.datetime ? new Date(plan.datetime) : new Date();
-  const category = CATEGORY_META[plan.category];
   const userHasJoined = !!plan.is_joined;
+
+  const categoryMeta = CATEGORY_META[plan.category as keyof typeof CATEGORY_META] || {
+    label: "Plan",
+    icon: "sparkles",
+  };
+  const CategoryIcon = ICON_MAP[categoryMeta.icon];
+
+  /* ✅ ORIGINAL LOGIC (FIXED) */
+  const spotsLeft = Math.max(
+    (plan.max_people || 1) -
+      (((plan.participants?.length || 0) + 1)), // +1 host
+    0
+  );
 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
     const shareUrl = `${window.location.origin}/plans/${plan.id}`;
 
     try {
       if (navigator.share) {
         await navigator.share({
           title: plan.title,
-          text: plan.description || `Join ${plan.title} on Zuno`,
           url: shareUrl,
         });
         return;
@@ -50,128 +83,190 @@ export function PlanCard({
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // user cancelled native share; no-op
-    }
+    } catch {}
   };
+
+  const participantNames = plan.participants?.map(p => p.user?.name || '').filter(Boolean) || [];
 
   return (
     <Link href={`/plans/${plan.id}`} className="block group">
-      <div className="overflow-hidden rounded-[28px] border-2 border-[#d8cbb8] app-card shadow-[0_4px_18px_rgba(26,20,16,0.05)] transition-all duration-200 hover:shadow-[0_8px_26px_rgba(26,20,16,0.09)]">
-        <div className="relative h-44 w-full overflow-hidden bg-[#e6ded2]">
+      <div className="overflow-hidden rounded-3xl border border-[rgba(26,20,16,0.08)] bg-white transition-all duration-300 hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+
+        {/* IMAGE */}
+        <div 
+          className="relative h-44 w-full overflow-hidden bg-[#e6ded2]"
+          style={{
+            backgroundImage: `url(${plan.image_url || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=800"})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
           <img
-            src={
-              plan.image_url ||
-              "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=800"
-            }
+            src={plan.image_url || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=800"}
             alt={plan.title}
-            className="object-center transition-transform duration-300 group-hover:scale-[1.03]"
-            sizes="(max-width: 390px) 100vw, 390px"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
           />
 
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
+
+          {/* ✅ CATEGORY BADGE (RESTORED) */}
           <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-[#faf8f4] px-3 py-1.5 text-[11px] text-[#1a1410] shadow-sm">
-            <CategoryIcon icon={category.icon} className="h-3.5 w-3.5" />{" "}
-            {category.label}
+            <CategoryIcon className="h-3.5 w-3.5" />
+            {categoryMeta.label}
           </div>
 
+          {/* FAVORITE */}
           <button
-            type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               onToggleFavorite?.();
             }}
-            className="absolute right-3 top-3 rounded-full bg-[#faf8f4] p-2 text-[#8f8272] shadow-sm transition-colors hover:text-[#d4522a]"
-            aria-label="toggle favorite"
+            className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow-sm"
           >
             <Heart
-              className={`h-4 w-4 ${plan.is_favorite ? "fill-[#d4522a] text-[#d4522a]" : ""}`}
+              className={`h-4 w-4 ${
+                plan.is_favorite
+                  ? "fill-[#d4522a] text-[#d4522a]"
+                  : "text-[#5a4e42]"
+              }`}
             />
           </button>
 
+          {/* ✅ PRIVATE BADGE (LIKE BEFORE) */}
           {plan.visibility === "private" && (
-            <div className="absolute left-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-[#1a1410] px-2.5 py-1 text-[10px] text-[#faf8f4]">
-              <Lock className="h-3 w-3" /> Private
+            <div className="absolute left-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-[#1a1410] px-2.5 py-1 text-[10px] text-white">
+              <Lock className="h-3 w-3" />
+              Private
             </div>
           )}
         </div>
 
-        <div className="space-y-2.5 p-4">
-          <h3 className="text-[16px] leading-none tracking-[-0.02em] text-[#1a1410]">
+        {/* CONTENT */}
+        <div className="p-4">
+          <h3 className="text-[17px] font-extrabold text-[#1a1410] line-clamp-1">
             {plan.title}
           </h3>
-          <p className="line-clamp-1 text-sm text-[#8f8272]">
-            {plan.description || "No description provided."}
+
+          <p className="mt-1 text-[13px] text-[#8a7e72] line-clamp-1">
+            {plan.description || "No description"}
           </p>
 
-          <p className="text-[15px] text-[#5a4e42]">
-            {planDate.toLocaleDateString(undefined, {
-              month: "short",
-              day: "numeric",
-            })}
-            <span className="mx-2 text-[#b8aa99]">•</span>
-            {planDate.toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "2-digit",
-            })}
-            <span className="mx-2 text-[#b8aa99]">•</span>
-            <span className="text-[#d4522a]">
-              {Math.max(
-                (plan.max_people || 1) -
-                  (((plan as any).joined_names?.length || 0) + 1),
-                0,
-              )}{" "}
-              spots left
+          {/* META */}
+          <div className="mt-3 flex items-center gap-2 text-[12px] font-semibold text-[#6e6258]">
+            <Meta icon={Calendar}>
+              {planDate.toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+              })}
+            </Meta>
+
+            <Dot />
+
+            <Meta icon={Clock3}>
+              {planDate.toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </Meta>
+
+            <Dot />
+
+            {/* ✅ ALWAYS VISIBLE SPOTS */}
+            <span className="inline-flex items-center gap-1 rounded-lg bg-[#fdf0eb] px-2 py-0.5 text-[11.5px] font-bold text-[#b34318]">
+              <Users className="h-3 w-3" />
+              {spotsLeft} spots left
             </span>
-          </p>
-
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="line-clamp-1 inline-flex items-center gap-1 text-sm text-[#5a4e42]">
-                <MapPin className="h-3.5 w-3.5" />
-                {plan.location_name}
-              </p>
-              {/* <p className="line-clamp-1 text-xs font-medium text-[#1a1410]">
-                Host: {plan.host?.name?.split(" ")[0] || "Host"}
-              </p> */}
-            </div>
-
-            {!userHasJoined &&
-              (isAuthed ? (
-                <button className="inline-flex items-center gap-1 rounded-full bg-[#1a1410] px-4 py-2 text-sm text-[#faf8f4]">
-                  Join{" "}
-                </button>
-              ) : (
-                <a
-                  href="/login?next=/feed"
-                  className="inline-flex items-center gap-1 rounded-full bg-[#1a1410] px-5 py-2.5 text-lg text-[#faf8f4]"
-                >
-                  Join <ArrowRight className="h-5 w-5" />
-                </a>
-              ))}
-            {userHasJoined && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-4 py-2 text-sm text-white">
-                <CheckCircle2 className="h-4 w-4" /> Joined
-              </span>
-            )}
           </div>
 
-          <div className="flex items-center gap-2 justify-between">
-            <span>
-              {!!(plan as any).joined_names?.length && (
-                <AvatarStack names={(plan as any).joined_names} />
+          {/* LOCATION */}
+          {plan.location_name && (
+            <p className="mt-2 flex items-center gap-1 text-[12.5px] text-[#7a6e62]">
+              <MapPin className="h-3 w-3" />
+              {plan.location_name}
+            </p>
+          )}
+
+          <Divider />
+
+          {/* BOTTOM */}
+          <div className="flex items-center justify-between">
+            <AvatarStack names={participantNames} />
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleShare}
+                className={`rounded-xl p-2 ${
+                  copied
+                    ? "bg-green-100 text-green-600"
+                    : "bg-[#f0e8dc] text-[#5a4e42]"
+                }`}
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+
+              {userHasJoined ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-4 py-2 text-[13px] font-bold text-white">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Joined
+                </span>
+              ) : (
+                <button className="rounded-full bg-[#1a1410] px-4 py-2 text-[13px] font-bold text-white">
+                  {plan.visibility === "private" ? "Request" : "Join"}
+                </button>
               )}
-            </span>
-            <button
-              type="button"
-              onClick={handleShare}
-              className={`rounded-xl p-2 transition-all ${copied ? "bg-[#e8f3e8] text-[#2d7a2d]" : "bg-[#efe8dc] text-[#5a4e42] hover:bg-[#e4ddd1]"}`}
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
+            </div>
           </div>
         </div>
       </div>
     </Link>
   );
+}
+
+/* ---------- SMALL COMPONENTS ---------- */
+
+function Meta({ icon: Icon, children }: any) {
+  return (
+    <span className="flex items-center gap-1">
+      <Icon className="h-3 w-3" />
+      {children}
+    </span>
+  );
+}
+
+function Dot() {
+  return <span className="text-[#c8bfb3]">·</span>;
+}
+
+function Divider() {
+  return <div className="my-3 h-px bg-[rgba(26,20,16,0.07)]" />;
+}
+
+function AvatarStack({ names }: { names: string[] }) {
+  const visible = names.slice(0, 3);
+  const extra = names.length - visible.length;
+
+  return (
+    <div className="flex items-center">
+      {visible.map((name, i) => (
+        <div
+          key={i}
+          className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#e8dfd4] text-[11px] font-bold text-[#5a4e42] -ml-2 first:ml-0"
+        >
+          {getInitials(name)}
+        </div>
+      ))}
+      {extra > 0 && (
+        <span className="ml-1 text-xs text-[#6e6258]">+{extra}</span>
+      )}
+    </div>
+  );
+}
+
+function getInitials(name: string) {
+  if (!name) return "?";
+  const parts = name.split(" ");
+  return parts.length === 1
+    ? parts[0][0]
+    : parts[0][0] + parts[1][0];
 }

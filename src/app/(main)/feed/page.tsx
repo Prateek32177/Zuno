@@ -89,24 +89,36 @@ export default function FeedPage() {
         </div>
       </div>
 
-      <div className="border-b app-card">
-        <div className="mx-auto max-w-md px-4 py-3">
-          <div className="grid grid-cols-4 gap-2">
-            <button onClick={() => setSelectedCategory(null)} className={`flex flex-col items-center justify-center rounded-xl p-3 text-xs font-semibold transition-all ${selectedCategory === null ? 'border-[1.5px] border-[#1a1410] bg-[#1a1410] text-[#faf8f4]' : 'border-[1.5px] app-card text-[#5a4e42]'}`}>
-              <span className="mb-1 text-lg">🎯</span>
-              All
-            </button>
-            {categories.map((cat) => (
-              <button key={cat} onClick={() => setSelectedCategory(cat)} className={`flex flex-col items-center justify-center rounded-xl p-3 text-xs font-semibold transition-all ${selectedCategory === cat ? 'border-[1.5px] border-[#d4522a] bg-[#d4522a] text-[#faf8f4]' : 'border-[1.5px] app-card text-[#5a4e42]'}`}>
-                <span className="mb-1 text-lg">
-                  <CategoryIcon icon={CATEGORY_META[cat].icon} className="h-5 w-5" />
-                </span>
-                {CATEGORY_META[cat].label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+{/* Replace the old grid div with this */}
+<div className="border-b border-[rgba(26,20,16,0.08)] bg-[#f5efe6]">
+  <div className="mx-auto max-w-md px-4 py-3">
+    <div className="flex gap-2 flex-wrap pb-1 scrollbar-hide">
+      <button
+        onClick={() => setSelectedCategory(null)}
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border-[1.5px] px-3.5 py-[7px] text-[12px] font-bold transition-all active:scale-95
+          ${selectedCategory === null
+            ? 'border-[#1a1410] bg-[#1a1410] text-[#faf8f4]'
+          : 'border-[rgba(26,20,16,0.12)] bg-white text-[#5a4e42]'}`}
+      >
+        <CategoryIcon icon="sparkles" className="h-3.5 w-3.5" />
+        All
+      </button>
+      {categories.map((cat) => (
+        <button
+          key={cat}
+          onClick={() => setSelectedCategory(cat)}
+          className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border-[1.5px] px-3.5 py-[7px] text-[11px] font-bold transition-all active:scale-95
+            ${selectedCategory === cat
+              ? 'border-[#d4522a] bg-[#d4522a] text-[#faf8f4]'
+              : 'border-[rgba(26,20,16,0.12)] bg-white text-[#5a4e42]'}`}
+        >
+          <CategoryIcon icon={CATEGORY_META[cat].icon} className="h-3.5 w-3.5" />
+          {CATEGORY_META[cat].label}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
 
       <div className="mx-auto max-w-md px-4 py-4">
         {loading ? (
