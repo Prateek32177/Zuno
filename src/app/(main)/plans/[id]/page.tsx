@@ -28,11 +28,16 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   }
 
   /* ✅ Build absolute OG URL */
-  const headerList = await headers();
-  const host = headerList.get("x-forwarded-host") || headerList.get("host");
-  const forwardedProto = headerList.get("x-forwarded-proto");
-  const protocol = host?.includes("localhost") ? "http" : "https";
-  const baseUrl = `${forwardedProto || protocol}://${host}`;
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  let baseUrl = configuredSiteUrl;
+
+  if (!baseUrl) {
+    const headerList = await headers();
+    const host = headerList.get("x-forwarded-host") || headerList.get("host");
+    const forwardedProto = headerList.get("x-forwarded-proto");
+    const protocol = host?.includes("localhost") ? "http" : "https";
+    baseUrl = host ? `${forwardedProto || protocol}://${host}` : "https://zunoplan.vercel.app";
+  }
 
   const ogImageUrl = `${baseUrl}/plans/${id}/opengraph-image`;
   const canonicalUrl = `${baseUrl}/plans/${id}`;

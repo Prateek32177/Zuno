@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export const alt = "Plan preview";
+export const contentType = "image/png";
 export const size = {
   width: 1200,
   height: 630,
