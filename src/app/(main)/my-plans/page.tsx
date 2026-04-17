@@ -62,6 +62,7 @@ export default function MyPlansPage() {
     .filter((p) => p.is_favorite)
     .sort((a, b) => +new Date(a.datetime) - +new Date(b.datetime))
   const hostedPlans = cityPlans.filter((p) => p.host_id === userId)
+  const pendingHostedRequests = hostedPlans.reduce((sum, plan) => sum + (plan.participants || []).filter((p: any) => p.status === 'pending').length, 0)
 
   const plansByView: Record<PlanView, Plan[]> = {
     upcoming: upcomingPlans,
@@ -103,7 +104,7 @@ export default function MyPlansPage() {
             { key: 'upcoming', label: 'Upcoming', count: upcomingPlans.length },
             { key: 'past', label: 'Past', count: pastPlans.length },
             { key: 'favorites', label: 'Favorites', count: favoritePlans.length },
-            { key: 'hosted', label: 'Hosted', count: hostedPlans.length },
+            { key: 'hosted', label: 'Hosted', count: hostedPlans.length, pending: pendingHostedRequests },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -114,6 +115,9 @@ export default function MyPlansPage() {
             >
               {tab.label}
               <span className={`ml-1 text-[10px] ${view === tab.key ? 'text-[#d4c8b8]' : 'app-muted'}`}>({tab.count})</span>
+              {!!(tab as any).pending && (
+                <span className="ml-1 rounded-full bg-[#d4522a] px-1.5 py-0.5 text-[10px] text-white">{(tab as any).pending}</span>
+              )}
             </button>
           ))}
         </div>

@@ -62,7 +62,7 @@ export default async function Page({ params }: any) {
 
   const { data: plan, error } = await supabase
     .from("plans")
-    .select("*, host:users!plans_host_id_fkey(id,name,avatar_url,gpay_link)")
+    .select("*, host:users!plans_host_id_fkey(id,name,avatar_url,gpay_link,instagram_url)")
     .eq("id", id)
     .single();
 

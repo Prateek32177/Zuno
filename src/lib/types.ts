@@ -47,6 +47,7 @@ export interface Plan {
   participant_count?: number
   is_joined?: boolean
   is_favorite?: boolean
+  current_user_id?: string | null
   created_at: string
   host?: User
   participants?: PlanParticipant[]

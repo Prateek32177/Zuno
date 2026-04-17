@@ -51,6 +51,7 @@ export function PlanCard({
 
   const planDate = plan.datetime ? new Date(plan.datetime) : new Date();
   const userHasJoined = !!plan.is_joined;
+  const isHost = plan.current_user_id && plan.host_id === plan.current_user_id;
 
   const categoryMeta = CATEGORY_META[plan.category as keyof typeof CATEGORY_META] || {
     label: "Plan",
@@ -59,11 +60,10 @@ export function PlanCard({
   const CategoryIcon = ICON_MAP[categoryMeta.icon];
 
   /* ✅ ORIGINAL LOGIC (FIXED) */
-  const spotsLeft = Math.max(
-    (plan.max_people || 1) -
-      (((plan.participants?.length || 0) + 1)), // +1 host
-    0
-  );
+  const joinedParticipants = (plan.participants || []).filter((p: any) => p.status === "joined").length;
+  const spotsLeft = Math.max((plan.max_people || 1) - joinedParticipants, 0);
+  const isExpired = +new Date(plan.datetime) < Date.now();
+  const isClosed = plan.status === "completed" || plan.status === "cancelled";
 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -140,6 +140,11 @@ export function PlanCard({
               Private
             </div>
           )}
+          {(isExpired || isClosed) && (
+            <div className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-semibold text-amber-800">
+              {isExpired ? "Expired" : "Closed"}
+            </div>
+          )}
         </div>
 
         {/* CONTENT */}
@@ -205,13 +210,17 @@ export function PlanCard({
                 <Share2 className="h-4 w-4" />
               </button>
 
-              {userHasJoined ? (
+              {isHost ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#4a3a2f] px-4 py-2 text-[13px] font-bold text-white">
+                  Hosting
+                </span>
+              ) : userHasJoined ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-4 py-2 text-[13px] font-bold text-white">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Joined
                 </span>
               ) : (
-                <button className="rounded-full bg-[#1a1410] px-4 py-2 text-[13px] font-bold text-white">
+                <button disabled={isExpired || isClosed} className="rounded-full bg-[#1a1410] px-4 py-2 text-[13px] font-bold text-white disabled:opacity-40">
                   {plan.visibility === "private" ? "Request" : "Join"}
                 </button>
               )}
@@ -245,13 +254,14 @@ function Divider() {
 function AvatarStack({ names }: { names: string[] }) {
   const visible = names.slice(0, 3);
   const extra = names.length - visible.length;
+  const tones = ["bg-[#ffd8c7]", "bg-[#d7e7ff]", "bg-[#d7f5e8]"];
 
   return (
     <div className="flex items-center">
       {visible.map((name, i) => (
         <div
           key={i}
-          className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#e8dfd4] text-[11px] font-bold text-[#5a4e42] -ml-2 first:ml-0"
+          className={`flex h-7 w-7 items-center justify-center rounded-full border-2 border-white ${tones[i % tones.length]} text-[11px] font-bold text-[#5a4e42] -ml-2 first:ml-0`}
         >
           {getInitials(name)}
         </div>

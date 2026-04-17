@@ -12,6 +12,7 @@ import { normalizeCityKey } from "@/lib/cities";
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 import { SignInDialog } from "@/components/auth/SignInDialog";
+import Link from "next/link";
 
 /* ---------- MAIN COMPONENT ---------- */
 export default function FeedPage() {
@@ -22,6 +23,7 @@ export default function FeedPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAuthed, setIsAuthed] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const { selectedCity } = useCity();
 
@@ -44,7 +46,10 @@ export default function FeedPage() {
     fetchPlans();
     createClient()
       .auth.getUser()
-      .then(({ data }) => setIsAuthed(!!data.user));
+      .then(({ data }) => {
+        setIsAuthed(!!data.user);
+        setCurrentUserId(data.user?.id || null);
+      });
   }, []);
 
   /* ---------- FILTERING ---------- */
@@ -64,11 +69,18 @@ export default function FeedPage() {
         .filter((p) =>
           p.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
+        .filter((p) => {
+          const expired = +new Date(p.datetime) < Date.now();
+          const closed = p.status === "completed" || p.status === "cancelled";
+          if (p.host_id === currentUserId) return true;
+          if (p.is_joined) return true;
+          return !expired && !closed;
+        })
         .sort(
           (a, b) =>
             +new Date(a.datetime) - +new Date(b.datetime)
         ),
-    [plans, selectedCategory, selectedCity, searchQuery]
+    [plans, selectedCategory, selectedCity, searchQuery, currentUserId]
   );
 
   const visiblePlans = isAuthed
@@ -167,12 +179,13 @@ export default function FeedPage() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`rounded-full px-3 py-1 text-xs font-bold ${
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${
                   selectedCategory === cat
                     ? "bg-[#d4522a] text-white"
                     : "bg-white"
                 }`}
               >
+                <CategoryIcon icon={CATEGORY_META[cat].icon} className="h-3.5 w-3.5" />
                 {CATEGORY_META[cat].label}
               </button>
             ))}
@@ -192,9 +205,12 @@ export default function FeedPage() {
             ))}
           </div>
         ) : visiblePlans.length === 0 ? (
-          <p className="text-center py-10">
-            No plans yet
-          </p>
+          <div className="py-12 text-center">
+            <p className="text-sm text-[#75685c]">No plans around you yet.</p>
+            <Link href="/plans/create" className="mt-4 inline-flex rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm">
+              Create a plan today ✨
+            </Link>
+          </div>
         ) : (
           <div className="grid gap-3">
             {visiblePlans.map((plan) => (
