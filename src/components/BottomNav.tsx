@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Flame, Plus, Heart, User } from 'lucide-react'
+import { Flame, Plus, Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 export function BottomNav() {
@@ -11,7 +11,6 @@ export function BottomNav() {
   const navItems = [
     { href: '/feed', icon: Flame, label: 'Discover', active: is('/feed') },
     { href: '/my-plans', icon: Heart, label: 'My Plans', active: is('/my-plans') },
-    { href: '/profile/me', icon: User, label: 'Profile', active: is('/profile') },
   ]
 
   return (

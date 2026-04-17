@@ -9,9 +9,12 @@ export async function POST(_: Request, context: { params: Promise<{ id: string }
   const { data: auth } = await supabase.auth.getUser()
   if (!auth.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: plan } = await supabase.from('plans').select('id, approval_mode, host_id').eq('id', id).single()
+  const { data: plan } = await supabase.from('plans').select('id, approval_mode, host_id, status, datetime, visibility').eq('id', id).single()
   if (!plan) return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
   if (plan.host_id === auth.user.id) return NextResponse.json({ error: 'Host is already part of the plan' }, { status: 400 })
+  if (['completed', 'cancelled'].includes(plan.status) || +new Date(plan.datetime) < Date.now()) {
+    return NextResponse.json({ error: 'This plan is closed for joining.' }, { status: 400 })
+  }
 
   const status = plan.approval_mode ? 'pending' : 'joined'
   const { error } = await supabase.from('plan_participants').upsert({ user_id: auth.user.id, plan_id: id, status }, { onConflict: 'user_id,plan_id' })

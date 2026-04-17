@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/components/ui/toast'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -54,9 +54,23 @@ export default function CreatePlanPage() {
   const canProceedToNextStep = () => {
     if (currentStep === 0) return formData.title.trim() && formData.description.trim() && formData.city.trim()
     if (currentStep === 1) return formData.location_name.trim() && formData.datetime
-    if (currentStep === 2) return Number(formData.max_people) >= 2
+    if (currentStep === 2) return Number(formData.max_people) >= 1
     return true
   }
+
+  useEffect(() => {
+    if (formData.visibility === 'private' && formData.host_mode === 'open') {
+      setFormData((prev) => ({ ...prev, host_mode: 'host_managed', approval_mode: true }))
+    }
+  }, [formData.visibility, formData.host_mode])
+
+  const estimatedPerPerson = useMemo(() => {
+    if (formData.per_person_amount) return Number(formData.per_person_amount)
+    if (formData.total_amount && Number(formData.max_people) > 0) {
+      return Number(formData.total_amount) / Number(formData.max_people)
+    }
+    return null
+  }, [formData.per_person_amount, formData.total_amount, formData.max_people])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -129,19 +143,22 @@ export default function CreatePlanPage() {
 
         {currentStep === 2 && (
           <div className="space-y-3 rounded-2xl border app-card p-4 text-sm">
-            <input type="number" min="2" name="max_people" value={formData.max_people} onChange={handleChange} className="w-full rounded-xl border app-card px-3 py-2.5" />
+            <input type="number" min="1" name="max_people" value={formData.max_people} onChange={handleChange} className="w-full rounded-xl border app-card px-3 py-2.5" />
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={() => setFormData((prev) => ({ ...prev, visibility: 'public' }))} className={`rounded-xl border px-3 py-2 text-xs ${formData.visibility === 'public' ? 'bg-black text-white border-black' : 'app-card'}`}>Public</button>
               <button type="button" onClick={() => setFormData((prev) => ({ ...prev, visibility: 'private' }))} className={`rounded-xl border px-3 py-2 text-xs ${formData.visibility === 'private' ? 'bg-black text-white border-black' : 'app-card'}`}>Private (invite-only)</button>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={() => setFormData((prev) => ({ ...prev, host_mode: 'host_managed', approval_mode: true }))} className={`rounded-xl border px-3 py-2 text-xs ${formData.host_mode === 'host_managed' ? 'bg-black text-white border-black' : 'app-card'}`}>Host manages requests</button>
-              <button type="button" onClick={() => setFormData((prev) => ({ ...prev, host_mode: 'open', approval_mode: false }))} className={`rounded-xl border px-3 py-2 text-xs ${formData.host_mode === 'open' ? 'bg-black text-white border-black' : 'app-card'}`}>Open to everyone</button>
+              <button type="button" disabled={formData.visibility === 'private'} onClick={() => setFormData((prev) => ({ ...prev, host_mode: 'open', approval_mode: false }))} className={`rounded-xl border px-3 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-50 ${formData.host_mode === 'open' ? 'bg-black text-white border-black' : 'app-card'}`}>Open to everyone</button>
             </div>
             <input type="url" name="whatsapp_link" value={formData.whatsapp_link} onChange={handleChange} placeholder="WhatsApp group link (single place)" className="w-full rounded-xl border app-card px-3 py-2.5" />
             <input type="number" name="estimated_cost" value={formData.estimated_cost} onChange={handleChange} placeholder="Estimated budget per person (optional)" className="w-full rounded-xl border app-card px-3 py-2.5" />
-            <input type="number" name="total_amount" value={formData.total_amount} onChange={handleChange} placeholder="Total group amount (auto split if per person is empty)" className="w-full rounded-xl border app-card px-3 py-2.5" />
-            <input type="number" name="per_person_amount" value={formData.per_person_amount} onChange={handleChange} placeholder="Per person amount (overrides total split)" className="w-full rounded-xl border app-card px-3 py-2.5" />
+            <input type="number" name="total_amount" value={formData.total_amount} onChange={handleChange} placeholder="Estimated total expense (optional)" className="w-full rounded-xl border app-card px-3 py-2.5" />
+            <input type="number" name="per_person_amount" value={formData.per_person_amount} onChange={handleChange} placeholder="Estimated per person cost (optional)" className="w-full rounded-xl border app-card px-3 py-2.5" />
+            <p className="rounded-lg bg-[#f6efe4] px-3 py-2 text-xs text-[#6f6254]">
+              {estimatedPerPerson ? `Auto split preview: ₹${estimatedPerPerson.toFixed(0)} per person.` : 'Add total or per-person amount to enable split preview.'}
+            </p>
             <label className="flex items-center justify-between gap-2"><span>Show organizer payment options</span><input type="checkbox" role="switch" name="show_payment_options" checked={formData.show_payment_options} onChange={handleChange} /></label>
             <label className="flex items-center justify-between gap-2"><span>Require approval</span><input type="checkbox" role="switch" name="approval_mode" checked={formData.approval_mode} onChange={handleChange} disabled={formData.host_mode === 'open'} /></label>
             <label className="flex items-center justify-between gap-2"><span>Women only</span><input type="checkbox" role="switch" name="female_only" checked={formData.female_only} onChange={handleChange} /></label>

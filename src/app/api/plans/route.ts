@@ -29,6 +29,7 @@ export async function GET() {
       plans.map((p: any) => ({
         ...p,
         is_joined: false,
+        current_user_id: null,
         joined_names: (p.participants || [])
           .filter((pp: any) => pp.status === 'joined')
           .map((pp: any) => pp.user?.name)
@@ -42,11 +43,12 @@ export async function GET() {
   const favSet = new Set((favorites || []).map((f: any) => f.plan_id))
 
   return NextResponse.json(
-    plans.map((p: any) => ({
-      ...p,
-      is_favorite: favSet.has(p.id),
-      is_joined: (p.participants || []).some((pp: any) => pp.user_id === auth.user?.id && pp.status === 'joined'),
-      joined_names: (p.participants || [])
+      plans.map((p: any) => ({
+        ...p,
+        is_favorite: favSet.has(p.id),
+        is_joined: (p.participants || []).some((pp: any) => pp.user_id === auth.user?.id && pp.status === 'joined'),
+        current_user_id: auth.user?.id || null,
+        joined_names: (p.participants || [])
         .filter((pp: any) => pp.status === 'joined')
         .map((pp: any) => pp.user?.name)
         .filter(Boolean),
@@ -64,6 +66,8 @@ export async function POST(request: Request) {
   const city = canonicalizeCity(body.city)
   if (!city) return NextResponse.json({ error: 'City is required' }, { status: 400 })
 
+  const visibility = body.visibility === 'private' ? 'private' : 'public'
+  const hostMode = visibility === 'private' ? 'host_managed' : body.host_mode === 'open' ? 'open' : 'host_managed'
   const payload = {
     host_id: auth.user.id,
     title: body.title,
@@ -72,16 +76,16 @@ export async function POST(request: Request) {
     location_name: body.location_name,
     city,
     datetime: body.datetime,
-    max_people: Number(body.max_people || 8),
+    max_people: Math.max(Number(body.max_people || 8), 1),
     whatsapp_link: body.whatsapp_link || '',
-    approval_mode: body.host_mode === 'open' ? false : !!body.approval_mode,
+    approval_mode: hostMode === 'open' ? false : !!body.approval_mode,
     female_only: !!body.female_only,
     image_url: body.image_url || null,
     google_maps_link: body.google_maps_link || null,
     show_payment_options: !!body.show_payment_options,
     estimated_cost: body.estimated_cost ? Number(body.estimated_cost) : null,
-    visibility: body.visibility === 'private' ? 'private' : 'public',
-    host_mode: body.host_mode === 'open' ? 'open' : 'host_managed',
+    visibility,
+    host_mode: hostMode,
     total_amount: body.total_amount ? Number(body.total_amount) : null,
     per_person_amount: body.per_person_amount ? Number(body.per_person_amount) : null,
   }

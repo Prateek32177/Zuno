@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { MapPin } from 'lucide-react'
+import { LogOut, MapPin, Settings } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { INDIA_HIGH_POTENTIAL_CITIES } from '@/lib/cities'
@@ -23,6 +23,7 @@ export function TopNav() {
   const { selectedCity, setSelectedCity } = useCity()
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [showAuthDialog, setShowAuthDialog] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -73,17 +74,41 @@ export function TopNav() {
             </label>
 
             {user ? (
-              <Link
-                href={`/profile/${user.id}`}
-                className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-[1.5px] app-card"
-                aria-label="Open profile"
-              >
-                <img
-                  src={getUserAvatarUrl({ avatarUrl: user.avatar_url, avatarSeed: user.avatar_seed, fallbackSeed: user.id })}
-                  alt="Your profile"
-                  className="h-full w-full object-cover"
-                />
-              </Link>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowMenu((prev) => !prev)}
+                  className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-[1.5px] app-card"
+                  aria-label="Open profile menu"
+                >
+                  <img
+                    src={getUserAvatarUrl({ avatarUrl: user.avatar_url, avatarSeed: user.avatar_seed, fallbackSeed: user.id })}
+                    alt="Your profile"
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 top-12 z-30 min-w-[150px] rounded-xl border app-card p-1.5 shadow-lg">
+                    <Link href={`/profile/${user.id}`} onClick={() => setShowMenu(false)} className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm hover:bg-[#f3ebdf]">
+                      Profile
+                    </Link>
+                    <Link href="/settings" onClick={() => setShowMenu(false)} className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm hover:bg-[#f3ebdf]">
+                      <Settings className="h-3.5 w-3.5" /> Settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await createClient().auth.signOut()
+                        setShowMenu(false)
+                        window.location.href = '/feed'
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-[#9b2d20] hover:bg-[#fff0ec]"
+                    >
+                      <LogOut className="h-3.5 w-3.5" /> Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <button
                 type="button"
