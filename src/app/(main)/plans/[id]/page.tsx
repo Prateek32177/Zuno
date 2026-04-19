@@ -7,7 +7,7 @@ import { computeEffectivePlanStatus, normalizeVisibility } from "@/lib/plan";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=1200&auto=format&fit=crop";
-const SITE_URL =  "https://zunoplan.vercel.app";
+const SITE_URL = "https://zunoplan.vercel.app";
 
 // ─── Helpers ────────────────────────────────────────────────────
 
@@ -52,12 +52,13 @@ function buildOgDescription(plan: {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>; // ← Promise type
 }): Promise<Metadata> {
+  const { id } = await params;
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  const { data: plan } = await supabase
+  const { data: plan, error } = await supabase
     .from("plans")
     .select(
       `
@@ -66,8 +67,9 @@ export async function generateMetadata({
       participants:plan_participants(status)
     `,
     )
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
+  if (error) console.error("OG metadata fetch failed:", error.message);
 
   if (!plan) return { title: "Plan not found" };
 
@@ -91,7 +93,11 @@ export async function generateMetadata({
   });
 
   // Use the plan's own image directly — no processing, no edge function
-  const ogImage = plan.image_url || FALLBACK_IMAGE;
+  // Instead of signed URL, use the public URL directly:
+  const ogImage = plan.image_url
+    ? plan.image_url.replace("/sign/", "/public/") // strip token
+    : FALLBACK_IMAGE;
+
   const planUrl = `${SITE_URL}/plans/${plan.id}`;
 
   return {
