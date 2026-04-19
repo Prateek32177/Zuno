@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { computeEffectivePlanStatus, normalizeVisibility } from "@/lib/plan";
 
 const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=1200&auto=format&fit=crop";
+  "https://res.cloudinary.com/dojdqt19w/image/upload/v1776621170/Adobe_Express_-_file_tjw0sa.jpg";
 const SITE_URL = "https://zunoplan.vercel.app";
 
 // ─── Helpers ────────────────────────────────────────────────────
