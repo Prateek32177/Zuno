@@ -24,27 +24,17 @@ function formatShareDate(datetime: string) {
 /** Build a punchy OG title: no description, just the key facts */
 function buildOgTitle(plan: {
   title: string;
-  location_name?: string | null;
   datetime: string;
-  category?: string | null;
+  city?: string | null;
 }) {
-  const parts: string[] = [plan.title];
-  if (plan.location_name) parts.push(plan.location_name);
-  parts.push(formatShareDate(plan.datetime));
+  const date = new Date(plan.datetime).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+  });
+  const parts = [plan.title];
+  if (plan.city) parts.push(plan.city);
+  parts.push(date);
   return parts.join(" · ");
-}
-
-function buildOgDescription(plan: {
-  max_people?: number | null;
-  joined: number;
-  host_name?: string | null;
-  category?: string | null;
-}) {
-  const spotsLeft = Math.max(Number(plan.max_people || 0) - plan.joined, 0);
-  const cat = plan.category ? `${plan.category} plan` : "plan";
-  const host = plan.host_name ? `by ${plan.host_name}` : "";
-  const spots = spotsLeft > 0 ? `${spotsLeft} spots left` : "Fully booked";
-  return [host && `A ${cat} ${host}`, spots].filter(Boolean).join(" · ");
 }
 
 // ─── Metadata ────────────────────────────────────────────────────
@@ -62,7 +52,7 @@ export async function generateMetadata({
     .from("plans")
     .select(
       `
-      id, title, category, datetime, location_name, max_people, image_url,
+      id, title, category, datetime, city, location_name, max_people, image_url,
       host:users!plans_host_id_fkey(name),
       participants:plan_participants(status)
     `,
@@ -80,17 +70,11 @@ export async function generateMetadata({
 
   const ogTitle = buildOgTitle({
     title: plan.title,
-    location_name: plan.location_name,
     datetime: plan.datetime,
-    category: plan.category,
+    city: (plan as any).city,
   });
 
-  const ogDescription = buildOgDescription({
-    max_people: plan.max_people,
-    joined,
-    host_name: host?.name,
-    category: plan.category,
-  });
+  const ogDescription = "Good vibes, real plan. Your spot is waiting.🌻";
 
   // Use the plan's own image directly — no processing, no edge function
   // Instead of signed URL, use the public URL directly:
