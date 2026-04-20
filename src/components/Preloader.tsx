@@ -19,7 +19,7 @@ export default function Loading() {
 
   if (!show) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0f0d0b]">
+    <div className="fixed inset-0 z-120 flex items-center justify-center bg-[#0f0d0b]">
       {/* Background Image */}
       <img
         src="/zuno-hero.jpg" // 👉 put your best image here
