@@ -1,46 +1,83 @@
 "use client";
-import { useState, useEffect } from "react";
 
-export default function Loading() {
-  const [show, setShow] = useState(false);
+import { useEffect, useState } from "react";
+
+const LINES = [
+  "Find a plan for a sunrise hike",
+  "Join instantly, just go",
+  "Chai + sunset plans",
+  "Hit a weekend club crawl",
+  "Take that spontaneous trip",
+];
+
+export default function ZunoPreloader() {
+  const [visible, setVisible] = useState(true);
+  const [index, setIndex] = useState(0);
+  const [phase, setPhase] = useState<"lines" | "final">("lines");
+  const [animateOut, setAnimateOut] = useState(false);
 
   useEffect(() => {
-    const alreadySeen = sessionStorage.getItem("zuno_seen");
+    let i = 0;
 
-    if (!alreadySeen) {
-      setShow(true);
+    const runSequence = async () => {
+      while (i < LINES.length) {
+        setIndex(i);
 
-      setTimeout(() => {
-        setShow(false);
-        sessionStorage.setItem("zuno_seen", "1");
-      }, 3500); // your animation duration
-    }
+        await wait(400); // 👈 readable hold
+
+        setAnimateOut(true);
+        await wait(150); // 👈 smooth fade
+
+        setAnimateOut(false);
+        i++;
+      }
+
+      setPhase("final");
+
+      await wait(1000); // 👈 let brand sit
+      setVisible(false);
+    };
+
+    runSequence();
   }, []);
 
-  if (!show) return null;
+  if (!visible) return null;
+
   return (
-    <div className="fixed inset-0 z-120 flex items-center justify-center bg-[#0f0d0b]">
-      {/* Background Image */}
+    <div className="fixed inset-0 z-[999] overflow-hidden bg-[#0f0d0b]">
       <img
-        src="/zuno-hero.jpg" // 👉 put your best image here
-        className="absolute inset-0 h-full w-full object-cover opacity-80"
-        alt="Zuno"
+        src="https://images.unsplash.com/photo-1616432119481-2876a5d92249?q=80&w=1400&auto=format&fit=crop"
+        className="absolute inset-0 h-full w-full object-cover opacity-80 scale-[1.05] animate-[zunoZoom_10s_ease-in-out_infinite]"
       />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70" />
 
-      {/* Center content */}
-      <div className="relative flex flex-col items-center gap-4 text-white">
-        {/* Logo / Brand */}
-        <div className="text-3xl font-semibold tracking-tight">Zuno</div>
+      <div className="relative flex h-full flex-col items-center justify-center text-white">
+        <div className="mb-4 text-3xl font-semibold tracking-tight">Zuno</div>
 
-        {/* Tagline */}
-        <p className="text-sm text-white/80">Discover plans. Meet people.</p>
-
-        {/* Loader */}
-        <div className="mt-4 h-8 w-8 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+        <div className="h-8 flex items-center justify-center">
+          {phase === "lines" ? (
+            <div
+              key={index}
+              className={`text-sm text-white/90 transition-all duration-300 ${
+                animateOut
+                  ? "opacity-0 translate-y-2"
+                  : "opacity-100 translate-y-0"
+              }`}
+            >
+              {LINES[index]}
+            </div>
+          ) : (
+            <div className="text-base font-medium tracking-tight animate-[finalReveal_0.9s_ease]">
+              Discover plans. Meet people.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
+}
+
+function wait(ms: number) {
+  return new Promise((res) => setTimeout(res, ms));
 }
