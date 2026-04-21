@@ -38,7 +38,7 @@ import {
   statusBadge,
   statusLabel,
 } from "@/lib/plan";
-
+import PlanShareCard, { inferCategory } from "@/components/Plansharecard";
 type Settlement = {
   user_id: string;
   settled: boolean;
@@ -64,7 +64,9 @@ export default function PlanDetailClient({ initialPlan }: any) {
   const [reportReason, setReportReason] = useState("unsafe_plan");
   const [reportDetails, setReportDetails] = useState("");
   const [hasReportedPlan, setHasReportedPlan] = useState(false);
-  const [showRemoveDialogFor, setShowRemoveDialogFor] = useState<string | null>(null);
+  const [showRemoveDialogFor, setShowRemoveDialogFor] = useState<string | null>(
+    null,
+  );
   const [showSafetyDialog, setShowSafetyDialog] = useState(false);
 
   const isHost = plan.current_user_id === plan.host_id;
@@ -76,13 +78,16 @@ export default function PlanDetailClient({ initialPlan }: any) {
     (p: any) => p.status === "joined",
   );
   const joinedCount = getJoinedParticipantsCount(plan.participants);
-  const genderAggregate = joinedParticipants.reduce((acc: any, p: any) => {
-    const g = String(p.user?.gender || '').toLowerCase();
-    if (g === 'male') acc.male += 1;
-    else if (g === 'female') acc.female += 1;
-    else if (g) acc.other += 1;
-    return acc;
-  }, { male: 0, female: 0, other: 0 });
+  const genderAggregate = joinedParticipants.reduce(
+    (acc: any, p: any) => {
+      const g = String(p.user?.gender || "").toLowerCase();
+      if (g === "male") acc.male += 1;
+      else if (g === "female") acc.female += 1;
+      else if (g) acc.other += 1;
+      return acc;
+    },
+    { male: 0, female: 0, other: 0 },
+  );
   const hostIncluded = isHostIncludedInSpots(plan);
   const participantCapacity = getParticipantCapacity(plan);
   const totalFilledCount = hostIncluded ? joinedCount + 1 : joinedCount;
@@ -95,7 +100,9 @@ export default function PlanDetailClient({ initialPlan }: any) {
     [plan.datetime],
   );
   const fillPercent =
-    totalCapacity > 0 ? Math.round((totalFilledCount / totalCapacity) * 100) : 0;
+    totalCapacity > 0
+      ? Math.round((totalFilledCount / totalCapacity) * 100)
+      : 0;
 
   // Use final_amount if available, else estimate
   const activeAmount = plan.final_amount
@@ -103,17 +110,30 @@ export default function PlanDetailClient({ initialPlan }: any) {
     : plan.cost_amount && plan.cost_mode === "total"
       ? Number(plan.cost_amount)
       : plan.cost_amount
-        ? Number(plan.cost_amount) * Math.max(hostIncluded ? joinedCount + 1 : joinedCount, 1)
+        ? Number(plan.cost_amount) *
+          Math.max(hostIncluded ? joinedCount + 1 : joinedCount, 1)
         : null;
 
   const perPersonShare = useMemo(() => {
     if (plan.final_amount)
-      return Number(plan.final_amount) / Math.max(hostIncluded ? joinedCount + 1 : joinedCount, 1);
+      return (
+        Number(plan.final_amount) /
+        Math.max(hostIncluded ? joinedCount + 1 : joinedCount, 1)
+      );
     if (!plan.cost_amount) return null;
     if (plan.cost_mode === "total")
-      return Number(plan.cost_amount) / Math.max(hostIncluded ? joinedCount + 1 : joinedCount, 1);
+      return (
+        Number(plan.cost_amount) /
+        Math.max(hostIncluded ? joinedCount + 1 : joinedCount, 1)
+      );
     return Number(plan.cost_amount);
-  }, [plan.final_amount, plan.cost_amount, plan.cost_mode, joinedCount, hostIncluded]);
+  }, [
+    plan.final_amount,
+    plan.cost_amount,
+    plan.cost_mode,
+    joinedCount,
+    hostIncluded,
+  ]);
 
   const upiLink =
     plan.host?.gpay_link && perPersonShare
@@ -121,11 +141,11 @@ export default function PlanDetailClient({ initialPlan }: any) {
       : null;
 
   useEffect(() => {
-    if (isHost) return
+    if (isHost) return;
     fetch(`/api/reports?targetType=plan&targetId=${plan.id}`)
       .then((res) => res.json())
       .then((data) => setHasReportedPlan(!!data?.hasOpenReport))
-      .catch(() => {})
+      .catch(() => {});
   }, [isHost, plan.id]);
 
   const mapLink = useMemo(() => {
@@ -237,33 +257,40 @@ export default function PlanDetailClient({ initialPlan }: any) {
     }
   };
 
-
   const reportPlan = async () => {
-    const res = await fetch('/api/reports', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetType: 'plan', targetPlanId: plan.id, reason: reportReason, details: reportDetails.trim() }),
+    const res = await fetch("/api/reports", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        targetType: "plan",
+        targetPlanId: plan.id,
+        reason: reportReason,
+        details: reportDetails.trim(),
+      }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) toast.error(data.error || 'Unable to submit report');
+    if (!res.ok) toast.error(data.error || "Unable to submit report");
     else {
       setHasReportedPlan(true);
       setShowReportDialog(false);
-      toast.success(data.message || "Report submitted. You can leave this plan anytime if you feel unsafe.");
+      toast.success(
+        data.message ||
+          "Report submitted. You can leave this plan anytime if you feel unsafe.",
+      );
     }
   };
 
   const removeParticipant = async (userId: string) => {
     setBusy(`remove-${userId}`);
     const res = await fetch(`/api/plans/${plan.id}/remove-participant`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) toast.error(data.error || 'Unable to remove participant');
+    if (!res.ok) toast.error(data.error || "Unable to remove participant");
     else {
-      toast.success('Participant removed');
+      toast.success("Participant removed");
       setShowRemoveDialogFor(null);
       await refreshPlan();
     }
@@ -277,7 +304,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
       body: JSON.stringify({ settled: true }),
     });
     const data = await res.json().catch(() => ({}));
-    console.log("settlement", data.settlements);
+
     if (res.ok) setSettlements(data.settlements || []);
     else toast.error("Failed to mark as settled");
   };
@@ -302,7 +329,6 @@ export default function PlanDetailClient({ initialPlan }: any) {
       </div>
     );
   }
-
   return (
     <>
       <style>{`
@@ -751,7 +777,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
                 if (navigator.share)
                   navigator.share({
                     title: plan.title,
-                    text: `${spotsOpen} spot${spotsOpen === 1 ? '' : 's'} left`,
+                    text: `${spotsOpen} spot${spotsOpen === 1 ? "" : "s"} left`,
                     url: window.location.href,
                   });
                 else {
@@ -767,12 +793,23 @@ export default function PlanDetailClient({ initialPlan }: any) {
             <h1 className="pd-title">{plan.title}</h1>
             <div className="pd-pills">
               {plan.category && (
-                <span className="pd-pill pp-dark" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                <span
+                  className="pd-pill pp-dark"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 5,
+                  }}
+                >
                   <CategoryIcon
-                    icon={CATEGORY_META[plan.category as keyof typeof CATEGORY_META]?.icon || "sparkles"}
+                    icon={
+                      CATEGORY_META[plan.category as keyof typeof CATEGORY_META]
+                        ?.icon || "sparkles"
+                    }
                     className="h-3 w-3"
                   />
-                  {CATEGORY_META[plan.category as keyof typeof CATEGORY_META]?.label || plan.category}
+                  {CATEGORY_META[plan.category as keyof typeof CATEGORY_META]
+                    ?.label || plan.category}
                 </span>
               )}
               {badge && (
@@ -839,7 +876,12 @@ export default function PlanDetailClient({ initialPlan }: any) {
                 <ExternalLink size={10} /> View profile
               </Link>
               {!isHost && (
-                <button onClick={() => setShowReportDialog(true)} className="pd-profile-btn" type="button" disabled={hasReportedPlan}>
+                <button
+                  onClick={() => setShowReportDialog(true)}
+                  className="pd-profile-btn"
+                  type="button"
+                  disabled={hasReportedPlan}
+                >
                   {hasReportedPlan ? "Reported" : "Report plan"}
                 </button>
               )}
@@ -883,9 +925,13 @@ export default function PlanDetailClient({ initialPlan }: any) {
                 <Users size={14} color="#c2602a" />
               </div>
               <p className="pd-info-lbl">Group size</p>
-              <p className="pd-info-val">{totalFilledCount} / {totalCapacity} joined</p>
+              <p className="pd-info-val">
+                {totalFilledCount} / {totalCapacity} joined
+              </p>
               <p className="pd-info-sub">{spotsOpen} spots open</p>
-              <p className="pd-info-sub">Host {hostIncluded ? "included" : "excluded"} in spots & split</p>
+              <p className="pd-info-sub">
+                Host {hostIncluded ? "included" : "excluded"} in spots & split
+              </p>
             </div>
           </div>
 
@@ -925,10 +971,15 @@ export default function PlanDetailClient({ initialPlan }: any) {
                     ? "Fully booked"
                     : `${spotsOpen} ${spotsOpen === 1 ? "spot" : "spots"} left`}
                 </p>
-                {(genderAggregate.male + genderAggregate.female + genderAggregate.other) > 0 && (
+                {genderAggregate.male +
+                  genderAggregate.female +
+                  genderAggregate.other >
+                  0 && (
                   <p style={{ fontSize: 11, color: "#8b7b6d", marginTop: 2 }}>
                     {genderAggregate.male} men • {genderAggregate.female} women
-                    {genderAggregate.other ? ` • ${genderAggregate.other} others` : ""}
+                    {genderAggregate.other
+                      ? ` • ${genderAggregate.other} others`
+                      : ""}
                   </p>
                 )}
               </div>
@@ -1003,7 +1054,8 @@ export default function PlanDetailClient({ initialPlan }: any) {
               </div>
               <p className="pd-cost-note">
                 <Info size={12} />
-                Total ₹{activeAmount?.toFixed(0)} · {hostIncluded ? joinedCount + 1 : joinedCount} people
+                Total ₹{activeAmount?.toFixed(0)} ·{" "}
+                {hostIncluded ? joinedCount + 1 : joinedCount} people
                 {plan.final_amount ? " · confirmed by host" : " · may change"}
               </p>
 
@@ -1049,7 +1101,13 @@ export default function PlanDetailClient({ initialPlan }: any) {
                               {p.user?.name || "Member"}
                             </span>
                           </div>
-                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 8,
+                              alignItems: "center",
+                            }}
+                          >
                             <span
                               className="pd-settle-status"
                               style={{
@@ -1067,16 +1125,26 @@ export default function PlanDetailClient({ initialPlan }: any) {
                                 </>
                               )}
                             </span>
-                            {isHost && String(p.user_id) !== String(plan.host_id) && (
-                              <button
-                                type="button"
-                                onClick={() => setShowRemoveDialogFor(p.user_id)}
-                                style={{ border: "1px solid #e5d7ca", borderRadius: 999, padding: "4px 8px", fontSize: 11 }}
-                                disabled={busy === `remove-${p.user_id}`}
-                              >
-                                {busy === `remove-${p.user_id}` ? "Removing..." : "Remove"}
-                              </button>
-                            )}
+                            {isHost &&
+                              String(p.user_id) !== String(plan.host_id) && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setShowRemoveDialogFor(p.user_id)
+                                  }
+                                  style={{
+                                    border: "1px solid #e5d7ca",
+                                    borderRadius: 999,
+                                    padding: "4px 8px",
+                                    fontSize: 11,
+                                  }}
+                                  disabled={busy === `remove-${p.user_id}`}
+                                >
+                                  {busy === `remove-${p.user_id}`
+                                    ? "Removing..."
+                                    : "Remove"}
+                                </button>
+                              )}
                           </div>
                         </div>
                       );
@@ -1134,16 +1202,22 @@ export default function PlanDetailClient({ initialPlan }: any) {
                   </button>
                 )}
                 {(effectiveStatus === "open" ||
-                  effectiveStatus === "expired") &&(plan.cost_amount>0 || plan.final_amount>0) && (
-                  <button
-                    type="button"
-                    onClick={() => { setFinalAmountInput(String(plan.final_amount || plan.cost_amount || "")); setShowFinalAmountDialog(true); }}
-                    disabled={busy === "final"}
-                    className="pd-ctrl-btn cc-final pd-ctrl-full"
-                  >
-                    <Wallet size={13} /> Confirm final amount
-                  </button>
-                )}
+                  effectiveStatus === "expired") &&
+                  (plan.cost_amount > 0 || plan.final_amount > 0) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFinalAmountInput(
+                          String(plan.final_amount || plan.cost_amount || ""),
+                        );
+                        setShowFinalAmountDialog(true);
+                      }}
+                      disabled={busy === "final"}
+                      className="pd-ctrl-btn cc-final pd-ctrl-full"
+                    >
+                      <Wallet size={13} /> Confirm final amount
+                    </button>
+                  )}
                 <button
                   type="button"
                   onClick={() => setShowCloseDialog(true)}
@@ -1216,7 +1290,10 @@ export default function PlanDetailClient({ initialPlan }: any) {
           {/* CTA */}
           <div style={{ paddingBottom: 8 }}>
             {plan.removed_by_host_for_current_user && (
-              <div className="pd-joined-badge" style={{ background: "#fef2f2", color: "#b91c1c" }}>
+              <div
+                className="pd-joined-badge"
+                style={{ background: "#fef2f2", color: "#b91c1c" }}
+              >
                 Host removed you from this plan
               </div>
             )}
@@ -1227,7 +1304,14 @@ export default function PlanDetailClient({ initialPlan }: any) {
               </div>
             )}
             {plan.removed_by_host_for_current_user ? (
-              <p style={{ marginTop: 8, textAlign: "center", fontSize: 12, color: "#b91c1c" }}>
+              <p
+                style={{
+                  marginTop: 8,
+                  textAlign: "center",
+                  fontSize: 12,
+                  color: "#b91c1c",
+                }}
+              >
                 You were removed by the host and can’t rejoin this plan.
               </p>
             ) : isHost ? null : isParticipant ? (
@@ -1257,9 +1341,25 @@ export default function PlanDetailClient({ initialPlan }: any) {
                       ? "Please wait…"
                       : statusLabel(effectiveStatus)}
                 </button>
-                <div style={{ marginTop: 8, textAlign: 'center', fontSize: 12, color: '#8a7a70', display: 'flex', gap: 8, justifyContent: 'center' }}>
+                <div
+                  style={{
+                    marginTop: 8,
+                    textAlign: "center",
+                    fontSize: 12,
+                    color: "#8a7a70",
+                    display: "flex",
+                    gap: 8,
+                    justifyContent: "center",
+                  }}
+                >
                   <span>Join responsibly</span>
-                  <button type="button" onClick={() => setShowSafetyDialog(true)} style={{ textDecoration: 'underline' }}>i</button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSafetyDialog(true)}
+                    style={{ textDecoration: "underline" }}
+                  >
+                    i
+                  </button>
                 </div>
               </>
             )}
@@ -1342,8 +1442,14 @@ export default function PlanDetailClient({ initialPlan }: any) {
         <ActionDialog
           open={!!showRemoveDialogFor}
           onClose={() => setShowRemoveDialogFor(null)}
-          onConfirm={() => showRemoveDialogFor ? removeParticipant(showRemoveDialogFor) : undefined}
-          busy={!!showRemoveDialogFor && busy === `remove-${showRemoveDialogFor}`}
+          onConfirm={() =>
+            showRemoveDialogFor
+              ? removeParticipant(showRemoveDialogFor)
+              : undefined
+          }
+          busy={
+            !!showRemoveDialogFor && busy === `remove-${showRemoveDialogFor}`
+          }
           title="Remove participant?"
           description="They will be removed from this plan immediately."
           confirmLabel="Remove"
@@ -1358,6 +1464,19 @@ export default function PlanDetailClient({ initialPlan }: any) {
         />
 
         <BottomNav />
+        <PlanShareCard
+          plan={{
+            id: plan.id,
+            title: plan.title,
+            location: plan.location,
+            datetime: plan.datetime, // string or Date, both work
+            spotsLeft: plan.max_people-plan.participants?.length,
+            totalSpots: plan.max_people,
+            city: plan.city,
+            category: inferCategory(plan.title), // auto-detects from title keywords
+            participants: plan.participants, // optional — shows avatars
+          }}
+        />
       </div>
     </>
   );
