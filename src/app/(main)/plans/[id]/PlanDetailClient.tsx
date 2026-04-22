@@ -18,6 +18,9 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
+  Download,
+  Copy,
+  X,
   Lock,
   ChevronDown,
   ChevronUp,
@@ -38,7 +41,7 @@ import {
   statusBadge,
   statusLabel,
 } from "@/lib/plan";
-import PlanShareCard, { inferCategory } from "@/components/Plansharecard";
+
 type Settlement = {
   user_id: string;
   settled: boolean;
@@ -68,6 +71,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
     null,
   );
   const [showSafetyDialog, setShowSafetyDialog] = useState(false);
+  const [showOGPreview, setShowOGPreview] = useState(false);
 
   const isHost = plan.current_user_id === plan.host_id;
   const isParticipant = (plan.participants || []).some(
@@ -674,16 +678,26 @@ export default function PlanDetailClient({ initialPlan }: any) {
           margin-bottom: 8px;
         }
         .pd-btn-join {
-          width: 100%; padding: 14px;
+          width: 100%; padding: 16px;
           border-radius: 16px;
-          background: #1a1410; color: white;
-          font-size: 14px; font-weight: 600;
+          background: linear-gradient(135deg, #1a1410 0%, #3a2f28 100%);
+          color: white;
+          font-size: 15px; font-weight: 700;
           border: none; cursor: pointer;
-          transition: opacity 0.18s, transform 0.1s;
+          transition: all 0.3s ease;
           font-family: 'DM Sans', sans-serif;
+          box-shadow: 0 8px 24px rgba(26, 20, 16, 0.25), 0 4px 12px rgba(0,0,0,0.15);
+          letter-spacing: 0.5px;
         }
-        .pd-btn-join:active { transform: scale(0.98); }
-        .pd-btn-join:disabled { opacity: 0.45; cursor: not-allowed; }
+        .pd-btn-join:hover:not(:disabled) { 
+          transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(26, 20, 16, 0.35), 0 6px 16px rgba(0,0,0,0.2);
+        }
+        .pd-btn-join:active:not(:disabled) { 
+          transform: translateY(0);
+          box-shadow: 0 4px 12px rgba(26, 20, 16, 0.25);
+        }
+        .pd-btn-join:disabled { opacity: 0.5; cursor: not-allowed; }
         .pd-btn-leave {
           width: 100%; padding: 12px;
           border-radius: 16px;
@@ -695,6 +709,110 @@ export default function PlanDetailClient({ initialPlan }: any) {
           transition: background 0.14s;
         }
         .pd-btn-leave:hover { background: #fdf9f5; }
+
+        /* OG Preview Dialog */
+        .pd-og-overlay {
+          position: fixed; inset: 0;
+          background: rgba(0,0,0,0.5); 
+          display: flex; align-items: center; justify-content: center;
+          z-index: 999;
+          padding: 16px;
+        }
+        .pd-og-dialog {
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          max-width: 450px;
+          width: 100%;
+          overflow: hidden;
+        }
+        .pd-og-header {
+          padding: 16px;
+          border-bottom: 1px solid #f3ede6;
+          display: flex; justify-content: space-between; align-items: center;
+        }
+        .pd-og-title {
+          font-size: 14px; font-weight: 700;
+          color: #1a1410;
+        }
+        .pd-og-close {
+          background: none; border: none;
+          cursor: pointer; color: #8b7b6d;
+          font-size: 20px; padding: 0;
+        }
+        .pd-og-content {
+          padding: 12px;
+          max-height: 60vh;
+          overflow-y: auto;
+        }
+        .pd-og-preview {
+          width: 100%;
+          border-radius: 12px;
+          border: 1px solid #f0ebe3;
+          background: #f9f6f1;
+        }
+        .pd-og-footer {
+          padding: 12px;
+          border-top: 1px solid #f3ede6;
+      display: flex;
+  justify-content: space-around;
+  margin-top: 14px;
+        }
+        .pd-og-btn {
+          padding: 12px;
+          border-radius: 12px;
+          border: 1px solid #e2d9ce;
+          background: white;
+          color: #5c4a38;
+          font-size: 11px; font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s;
+          font-family: 'DM Sans', sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          white-space: nowrap;
+        }
+        .pd-og-btn:hover { 
+          background: #faf7f3;
+          border-color: #d9cec3;
+        }
+        .pd-og-btn.primary {
+          background: #FFD54A;
+          color: black;
+        }
+
+        /* Share Banner */
+        .pd-share-banner {
+          position: sticky; top: 0;
+          background: white;
+          border-bottom: 1px solid #ede8e0;
+          padding: 10px 14px;
+          display: flex; gap: 8px; align-items: center;
+          justify-content: space-between;
+          z-index: 100;
+        }
+        .pd-share-btn {
+          display: flex; align-items: center; gap: 6px;
+          padding: 8px 12px;
+          border-radius: 12px;
+          border: 1px solid #e2d9ce;
+          background: white;
+          color: #5c4a38;
+          font-size: 11px; font-weight: 600;
+          cursor: pointer;
+          text-decoration: none;
+          transition: all 0.15s;
+          white-space: nowrap;
+        }
+        .pd-share-btn:hover { background: #faf7f3; }
+        .pd-share-btn.primary {
+          background: #1a1410;
+          color: white;
+          border-color: #1a1410;
+        }
+        .pd-share-btn.primary:hover { background: #3a2f28; }
 
         /* Host controls */
         .pd-ctrl-lbl {
@@ -844,6 +962,56 @@ export default function PlanDetailClient({ initialPlan }: any) {
 
         {/* ── Body ── */}
         <div className="pd-body">
+          {/* Share Banner */}
+          <div className="pd-share-banner">
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#5c4a38" }}>
+              Share this plan
+            </span>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setShowOGPreview(true)}
+                className="pd-share-btn"
+                title="Preview & Share"
+              >
+                <Share2 size={13} />{" "}
+                <span className="hidden sm:inline">Preview</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const url =
+                    typeof window !== "undefined" ? window.location.href : "";
+                  navigator.clipboard.writeText(url);
+                  toast.success("Link copied!");
+                }}
+                className="pd-share-btn"
+                title="Copy link"
+              >
+                <Copy size={13} />{" "}
+                <span className="hidden sm:inline">Copy Link</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const imgUrl = `/api/og?title=${encodeURIComponent(plan.title)}&city=${encodeURIComponent(plan.city || "")}&date=${encodeURIComponent(formatDateTime(planDate))}&spots=${spotsOpen}`;
+                  const link = document.createElement("a");
+                  link.href = imgUrl;
+                  link.download = `${plan.title}-plan.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  toast.success("Image downloaded!");
+                }}
+                className="pd-share-btn primary"
+                title="Download image for sharing"
+              >
+                <Download size={13} />{" "}
+                <span className="hidden sm:inline">Download</span>
+              </button>
+            </div>
+          </div>
+
           {/* Host */}
           <div className="pd-host">
             <img
@@ -1343,22 +1511,33 @@ export default function PlanDetailClient({ initialPlan }: any) {
                 </button>
                 <div
                   style={{
-                    marginTop: 8,
+                    marginTop: 12,
                     textAlign: "center",
-                    fontSize: 12,
+                    fontSize: 11,
                     color: "#8a7a70",
                     display: "flex",
                     gap: 8,
                     justifyContent: "center",
+                    alignItems: "center",
+                    padding: "8px 12px",
                   }}
                 >
-                  <span>Join responsibly</span>
+                  <ShieldCheck size={14} style={{ color: "#b09880" }} />
+                  <span style={{ fontWeight: 500 }}>Join responsibly</span>
                   <button
                     type="button"
                     onClick={() => setShowSafetyDialog(true)}
-                    style={{ textDecoration: "underline" }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
                   >
-                    i
+                    <Info size={14} />
                   </button>
                 </div>
               </>
@@ -1463,20 +1642,124 @@ export default function PlanDetailClient({ initialPlan }: any) {
           cancelLabel="Got it"
         />
 
+        {/* OG Preview Dialog */}
+        {showOGPreview && (
+          <div
+            className="pd-og-overlay"
+            onClick={() => setShowOGPreview(false)}
+          >
+            <div className="pd-og-dialog" onClick={(e) => e.stopPropagation()}>
+              <div className="pd-og-header">
+                <div className="pd-og-title">Share This Plan</div>
+                <button
+                  className="pd-og-close"
+                  onClick={() => setShowOGPreview(false)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="pd-og-content">
+                <img
+                  src={`/api/og?title=${encodeURIComponent(plan.title)}&city=${encodeURIComponent(plan.city || "")}&date=${encodeURIComponent(formatDateTime(planDate))}&spots=${spotsOpen}`}
+                  alt="Plan preview"
+                  className="pd-og-preview"
+                  style={{ width: "100%", height: "auto" }}
+                />
+                <div
+                  style={{
+                    marginTop: 14,
+                    padding: "12px",
+                    backgroundColor: "#faf7f3",
+                    borderRadius: 12,
+                    fontSize: 12,
+                    color: "#5c4a38",
+                    lineHeight: 1.5,
+                    border: "1px solid #f0ebe3",
+                  }}
+                >
+                  <div style={{ fontWeight: 600, marginBottom: 6 }}>
+                    Share on your story
+                  </div>
+                  <div>
+                    Download the image and share it on Instagram Stories or
+                    WhatsApp to invite your friends to join this plan.
+                  </div>
+                </div>
+              </div>
+              <div className="pd-og-footer">
+                <button
+                  type="button"
+                  className="pd-og-btn"
+                  onClick={() => {
+                    const url =
+                      typeof window !== "undefined" ? window.location.href : "";
+                    navigator.clipboard.writeText(url);
+                    toast.success("Link copied!");
+                  }}
+                  title="Copy plan link"
+                >
+                  <Copy size={14} />
+                </button>
+                <button
+                  type="button"
+                  className="pd-og-btn"
+                  onClick={() => {
+                    const imgUrl = `/api/og?title=${encodeURIComponent(plan.title)}&city=${encodeURIComponent(plan.city || "")}&date=${encodeURIComponent(formatDateTime(planDate))}&spots=${spotsOpen}`;
+                    const link = document.createElement("a");
+                    link.href = imgUrl;
+                    link.download = `${plan.title}-plan.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    toast.success("Image downloaded!");
+                  }}
+                  title="Download image for sharing"
+                >
+                  <Download size={14} />
+                </button>
+                <button
+                  type="button"
+                  className="pd-og-btn primary"
+                  onClick={() => {
+                    const url =
+                      typeof window !== "undefined" ? window.location.href : "";
+                    const text = `Check out this plan: ${plan.title}`;
+                    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
+                    window.open(whatsappUrl, "_blank");
+                  }}
+                  title="Share on WhatsApp"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    fill="currentColor"
+                    className="bi bi-whatsapp"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
+                  </svg>{" "}
+                </button>
+                <button
+                  type="button"
+                  className="pd-og-btn primary"
+                  onClick={() => {
+                    const url =
+                      typeof window !== "undefined" ? window.location.href : "";
+                    const text = `Check out this plan: ${plan.title}`;
+                    const instaUrl = `https://www.instagram.com/?text=${encodeURIComponent(text + " " + url)}`;
+                    window.open(instaUrl, "_blank");
+                  }}
+                  title="Share on Instagram"
+                >
+                  <Instagram size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <BottomNav />
-        <PlanShareCard
-          plan={{
-            id: plan.id,
-            title: plan.title,
-            location: plan.location,
-            datetime: plan.datetime, // string or Date, both work
-            spotsLeft: plan.max_people-plan.participants?.length,
-            totalSpots: plan.max_people,
-            city: plan.city,
-            category: inferCategory(plan.title), // auto-detects from title keywords
-            participants: plan.participants, // optional — shows avatars
-          }}
-        />
       </div>
     </>
   );

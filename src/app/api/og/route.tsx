@@ -56,11 +56,11 @@ if (planId) {
 
   // Curated high-quality outdoor/nature backgrounds
   const BACKGROUNDS = [
-    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800", // sunset beach
-    "https://images.unsplash.com/photo-1629185752152-fe65698ddee4", // lake mountains
-    "https://images.unsplash.com/photo-1501785888041-af3ef285b470", // mountain lake
-    "https://images.unsplash.com/photo-1469474968028-56623f02e42e", // dramatic nature
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", // adventure
+    "https://i.pinimg.com/1200x/48/01/96/480196cc8ff08c6e3e48890f98eb330d.jpg", // sunset beach
+    "https://i.pinimg.com/1200x/2c/91/22/2c9122441b827a1d83ca9614ac0ea263.jpg", // lake mountains
+    "https://i.pinimg.com/736x/ca/0b/eb/ca0beb3d1be9716b6c147f82a2de27a6.jpg", // mountain lake
+    "https://i.pinimg.com/736x/58/33/5c/58335c8ff9174ed9be4e511a437bfe47.jpg", // dramatic nature
+    "https://i.pinimg.com/736x/f3/96/70/f39670c6c3d29469d126c696e2383240.jpg", // adventure
   ];
 
   const imageUrl =
@@ -97,6 +97,7 @@ if (planId) {
         flexDirection: "column",
         position: "relative",
         overflow: "hidden",
+        background: "#0a0a0a",
       }}
     >
       {/* === BACKGROUND PHOTO === */}
@@ -109,30 +110,40 @@ if (planId) {
           height: "100%",
           objectFit: "cover",
           objectPosition: "center 40%",
-          filter: "brightness(0.65)",
+          filter: "brightness(0.55) saturate(1.2) contrast(1.1)",
         }}
       />
 
-      {/* === MULTI-STOP GRADIENT OVERLAY === */}
-      {/* Top fade for brand area */}
+      {/* === PREMIUM GRADIENT OVERLAY === */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           display: "flex",
           background:
-            "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.0) 28%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.75) 75%, rgba(0,0,0,0.92) 100%)",
+            "linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(20,20,40,0.5) 35%, rgba(10,10,25,0.3) 60%, rgba(0,0,0,0.85) 100%)",
         }}
       />
 
-      {/* === SUBTLE SIDE VIGNETTE === */}
+      {/* === DYNAMIC GLOW EFFECT === */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           display: "flex",
           background:
-            "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)",
+            "radial-gradient(ellipse 800px 600px at 50% 30%, rgba(255, 213, 74, 0.08) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* === ENHANCED VIGNETTE === */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          background:
+            "radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.5) 100%)",
         }}
       />
 
@@ -154,60 +165,65 @@ if (planId) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 16,
-            marginBottom: "-50px",
+            gap: 18,
+            marginBottom: "-40px",
+            position: "relative",
+            zIndex: 10,
           }}
         >
           {/* Left line */}
           <div
             style={{
               display: "flex",
-              height: 1.5,
-              width: 80,
-              background: "rgba(255,255,255,0.5)",
+              height: 2,
+              width: 100,
+              background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 100%)",
             }}
           />
-          {/* Diamond ornament */}
+          {/* Diamond ornament - Left */}
           <div
             style={{
               display: "flex",
-              width: 10,
-              height: 10,
-              background: "#FFD54A",
+              width: 12,
+              height: 12,
+              background: "linear-gradient(135deg, #FFD54A 0%, #FFC107 100%)",
               transform: "rotate(45deg)",
+              boxShadow: "0 0 20px rgba(255, 213, 74, 0.4)",
             }}
           />
           {/* Brand name */}
           <div
             style={{
               display: "flex",
-              fontSize: 40,
-              fontWeight: 700,
+              fontSize: 48,
+              fontWeight: 800,
               color: "white",
-              letterSpacing: "6px",
+              letterSpacing: "8px",
               textTransform: "uppercase",
               fontFamily: "serif",
+              textShadow: "0 4px 20px rgba(255, 213, 74, 0.3), 0 2px 10px rgba(0,0,0,0.5)",
             }}
           >
             zuno
           </div>
-          {/* Diamond ornament */}
+          {/* Diamond ornament - Right */}
           <div
             style={{
               display: "flex",
-              width: 10,
-              height: 10,
-              background: "#FFD54A",
+              width: 12,
+              height: 12,
+              background: "linear-gradient(135deg, #FFD54A 0%, #FFC107 100%)",
               transform: "rotate(45deg)",
+              boxShadow: "0 0 20px rgba(255, 213, 74, 0.4)",
             }}
           />
           {/* Right line */}
           <div
             style={{
               display: "flex",
-              height: 1.5,
-              width: 80,
-              background: "rgba(255,255,255,0.5)",
+              height: 2,
+              width: 100,
+              background: "linear-gradient(90deg, rgba(255,255,255,0.6) 0%, transparent 100%)",
             }}
           />
         </div>
@@ -220,35 +236,38 @@ if (planId) {
             alignItems: "center",
             textAlign: "center",
             gap: 0,
+            position: "relative",
+            zIndex: 10,
           }}
         >
-          {/* Line 1 — White italic */}
+          {/* Line 1 — White italic with enhanced shadow */}
           <div
             style={{
               display: "flex",
-              fontSize: 90,
-              fontWeight: 700,
+              fontSize: 100,
+              fontWeight: 800,
               fontStyle: "italic",
               color: "white",
-              lineHeight: 1.0,
-              letterSpacing: "-2px",
+              lineHeight: 0.95,
+              letterSpacing: "-3px",
+              textShadow: "0 8px 32px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4)",
             }}
           >
             {titleLine1}
           </div>
 
-          {/* Line 2 — Yellow italic */}
+          {/* Line 2 — Vibrant Yellow italic with glow */}
           <div
             style={{
               display: "flex",
-              fontSize: 90,
-              fontWeight: 700,
+              fontSize: 100,
+              fontWeight: 800,
               fontStyle: "italic",
-              color: "#FFD54A",
-              lineHeight: 1.0,
+              color: "#FFE54A",
+              lineHeight: 0.95,
               textShadow:
-                "0 4px 32px rgba(0,0,0,0.4), 0 2px 12px rgba(255,180,0,0.3)",
-              letterSpacing: "-2px",
+                "0 8px 40px rgba(255, 213, 74, 0.5), 0 4px 20px rgba(255,180,0,0.4), 0 2px 8px rgba(0,0,0,0.6)",
+              letterSpacing: "-3px",
             }}
           >
             {titleLine2}
@@ -259,12 +278,13 @@ if (planId) {
             style={{
               display: "flex",
               alignItems: "center",
-              marginTop: 40,
+              marginTop: 50,
               gap: 0,
-              background: "rgba(0,0,0,0.35)",
-              borderRadius: 100,
-              border: "1px solid rgba(255,255,255,0.18)",
+              background: "rgba(0,0,0,0.5)",
+              borderRadius: 120,
+              border: "2px solid rgba(255, 213, 74, 0.4)",
               overflow: "hidden",
+              boxShadow: "0 8px 32px rgba(255, 213, 74, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)",
             }}
           >
             {/* Date pill */}
@@ -272,32 +292,34 @@ if (planId) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                padding: "18px 34px",
-                fontSize: 26,
+                gap: 14,
+                padding: "20px 38px",
+                fontSize: 28,
                 color: "white",
-                fontWeight: 500,
+                fontWeight: 600,
+                position: "relative",
               }}
             >
               {/* Calendar icon */}
               <div
                 style={{
                   display: "flex",
-                  width: 28,
-                  height: 28,
-                  borderRadius: 6,
-                  border: "2.5px solid rgba(255,255,255,0.7)",
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  border: "3px solid rgba(255, 213, 74, 0.7)",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
+                  background: "rgba(255, 213, 74, 0.1)",
                 }}
               >
                 <div
                   style={{
                     display: "flex",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: "white",
+                    fontSize: 13,
+                    fontWeight: 800,
+                    color: "#FFD54A",
                   }}
                 >
                   31
@@ -310,9 +332,9 @@ if (planId) {
             <div
               style={{
                 display: "flex",
-                width: 1,
-                height: 40,
-                background: "rgba(255,255,255,0.25)",
+                width: 2,
+                height: 50,
+                background: "linear-gradient(180deg, transparent 0%, rgba(255, 213, 74, 0.3) 50%, transparent 100%)",
               }}
             />
 
@@ -321,15 +343,16 @@ if (planId) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                padding: "18px 34px",
-                fontSize: 26,
+                gap: 14,
+                padding: "20px 38px",
+                fontSize: 28,
                 color: "white",
-                fontWeight: 500,
+                fontWeight: 600,
               }}
             >
               {/* Pin icon */}
-              📍<span style={{ marginLeft: "2px" }}>{city}</span>
+              <div style={{ fontSize: 32 }}>📍</div>
+              <span>{city}</span>
             </div>
           </div>
         </div>
@@ -340,8 +363,10 @@ if (planId) {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 26,
-            marginTop: "-100px",
+            gap: 28,
+            marginTop: "-80px",
+            position: "relative",
+            zIndex: 10,
           }}
         >
           {/* SPOTS BADGE */}
@@ -349,11 +374,12 @@ if (planId) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 20,
-              border: "2.5px solid rgba(255, 213, 74, 0.75)",
-              padding: "20px 48px",
-              borderRadius: 20,
-              background: "rgba(0,0,0,0.3)",
+              gap: 24,
+              border: "3px solid rgba(255, 213, 74, 0.8)",
+              padding: "28px 56px",
+              borderRadius: 30,
+              background: "linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(20,10,0,0.3) 100%)",
+              boxShadow: "0 12px 48px rgba(255, 213, 74, 0.2), inset 0 1px 0 rgba(255,255,255,0.08)",
             }}
           >
             {/* People icon */}
@@ -472,10 +498,11 @@ if (planId) {
             <div
               style={{
                 display: "flex",
-                fontSize: 80,
+                fontSize: 92,
                 fontWeight: 900,
                 color: "#FFD54A",
                 lineHeight: 1,
+                textShadow: "0 4px 16px rgba(255, 213, 74, 0.4)",
               }}
             >
               {spots}
@@ -486,17 +513,17 @@ if (planId) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 2,
+                gap: 4,
               }}
             >
               <div
                 style={{
                   display: "flex",
-                  fontSize: 24,
-                  fontWeight: 700,
+                  fontSize: 26,
+                  fontWeight: 800,
                   color: "white",
                   textTransform: "uppercase",
-                  letterSpacing: "2px",
+                  letterSpacing: "3px",
                 }}
               >
                 SPOTS
@@ -504,10 +531,11 @@ if (planId) {
               <div
                 style={{
                   display: "flex",
-                  fontSize: 20,
-                  color: "rgba(255,255,255,0.65)",
-                  letterSpacing: "1px",
+                  fontSize: 22,
+                  color: "rgba(255,255,255,0.75)",
+                  letterSpacing: "2px",
                   textTransform: "uppercase",
+                  fontWeight: 600,
                 }}
               >
                 LEFT
@@ -519,16 +547,19 @@ if (planId) {
           <div
             style={{
               display: "flex",
-              background: "#FFD54A",
-              color: "#111111",
-              padding: "22px 80px",
-              borderRadius: 100,
-              fontSize: 30,
+              background: "linear-gradient(135deg, #FFE54A 0%, #FFD54A 100%)",
+              color: "#0a0a0a",
+              padding: "26px 92px",
+              borderRadius: 120,
+              fontSize: 32,
               fontWeight: 900,
-              letterSpacing: "1.5px",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              boxShadow: "0 16px 48px rgba(255, 213, 74, 0.35), 0 8px 24px rgba(0,0,0,0.3)",
+              border: "2px solid rgba(255,255,255,0.2)",
             }}
           >
-            Join this plan on Zuno
+            Join This Plan
           </div>
 
           {/* FOOTER LINK */}

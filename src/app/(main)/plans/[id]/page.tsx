@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import PlanDetailClient from "./PlanDetailClient";
 import { createClient } from "@/lib/supabase/server";
 import { computeEffectivePlanStatus, normalizeVisibility } from "@/lib/plan";
-import { hasBlockBetween } from '@/lib/server/safety';
-
+import { hasBlockBetween } from "@/lib/server/safety";
+import { parseDatetimeLocal, formatDateTime } from "@/lib/datetime";
+import { getParticipantCapacity } from "@/lib/plan";
+import { getJoinedParticipantsCount } from "@/lib/plan";
 const SITE_URL = "https://zunoplan.vercel.app";
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -63,8 +65,13 @@ export async function generateMetadata({
 
   const spotsLeft = Math.max((plan.max_people || 0) - joined, 0);
   const ogDescription = `${spotsLeft} spot${spotsLeft === 1 ? "" : "s"} left · Good vibes, real plan.`;
+  const planDate = parseDatetimeLocal(plan.datetime);
 
-  const ogImage = `${SITE_URL}/api/og?planId=${encodeURIComponent(plan.id)}`;
+  const participantCapacity = getParticipantCapacity(plan);
+  const joinedCount = getJoinedParticipantsCount(plan.participants);
+  const spotsOpen = Math.max(participantCapacity - joinedCount, 0);
+
+  const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(plan.title)}&city=${encodeURIComponent(plan.city || "")}&date=${encodeURIComponent(formatDateTime(planDate))}&spots=${spotsOpen}`;
 
   const planUrl = `${SITE_URL}/plans/${plan.id}`;
 
@@ -131,7 +138,10 @@ export default async function Page({ params }: any) {
         .maybeSingle()
     : { data: null };
 
-  if (auth.user?.id && (await hasBlockBetween(supabase, auth.user.id, plan.host_id))) {
+  if (
+    auth.user?.id &&
+    (await hasBlockBetween(supabase, auth.user.id, plan.host_id))
+  ) {
     return notFound();
   }
   const isParticipant = Boolean(
@@ -174,7 +184,8 @@ export default async function Page({ params }: any) {
       is_favorite: Boolean(favorites),
       current_user_id: auth.user?.id || null,
       current_user_gender: currentUser?.gender || null,
-      removed_by_host_for_current_user: !!myMembership?.removed_by_host && myMembership?.status === "left",
+      removed_by_host_for_current_user:
+        !!myMembership?.removed_by_host && myMembership?.status === "left",
     }),
   );
 
