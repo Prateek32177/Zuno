@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Discover real people, real plans. Join instantly and just show up.",
+    "Discover real plans, real people. Join instantly and just show up.",
 
   applicationName: "Zipout",
 
