@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const LINES = [
   "Find a plan for a sunrise hike",
@@ -10,38 +11,45 @@ const LINES = [
   "Take that spontaneous trip",
 ];
 
-export default function ZunoPreloader() {
-  const [visible, setVisible] = useState(true);
+export default function Preloader() {
+  const pathname = usePathname();
+
+  // 🚫 Disable on legal + non-landing pages
+  const disablePreloader =
+    pathname !== "/"
+
+  const [visible, setVisible] = useState(!disablePreloader);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<"lines" | "final">("lines");
   const [animateOut, setAnimateOut] = useState(false);
 
   useEffect(() => {
+    if (disablePreloader) return;
+
     let i = 0;
 
     const runSequence = async () => {
       while (i < LINES.length) {
         setIndex(i);
 
-        await wait(400); // 👈 readable hold
-
+        await wait(400);
         setAnimateOut(true);
-        await wait(150); // 👈 smooth fade
-
+        await wait(150);
         setAnimateOut(false);
+
         i++;
       }
 
       setPhase("final");
 
-      await wait(1000); // 👈 let brand sit
+      await wait(800); // ⬅ slightly faster
       setVisible(false);
     };
 
     runSequence();
-  }, []);
+  }, [disablePreloader]);
 
-  if (!visible) return null;
+  if (disablePreloader || !visible) return null;
 
   return (
     <div className="fixed inset-0 z-[999] overflow-hidden bg-[#0f0d0b]">
@@ -53,7 +61,9 @@ export default function ZunoPreloader() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70" />
 
       <div className="relative flex h-full flex-col items-center justify-center text-white">
-        <div className="mb-4 text-3xl font-semibold tracking-tight">Zipout</div>
+        <div className="mb-4 text-3xl font-semibold tracking-tight">
+          Zipout
+        </div>
 
         <div className="h-8 flex items-center justify-center">
           {phase === "lines" ? (
