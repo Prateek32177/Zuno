@@ -16,7 +16,7 @@ export default function Preloader() {
 
   // 🚫 Disable on legal + non-landing pages
   const disablePreloader =
-    pathname !== "/"
+    pathname == "/"
 
   const [visible, setVisible] = useState(!disablePreloader);
   const [index, setIndex] = useState(0);
