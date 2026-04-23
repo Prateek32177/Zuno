@@ -77,7 +77,7 @@ export function LoginForm() {
         >
           🔥
         </motion.div>
-        <h1 className="text-4xl font-black text-gray-900 mb-2">Zuno</h1>
+        <h1 className="text-4xl font-black text-gray-900 mb-2">Zipout</h1>
         <p className="text-gray-600 font-medium">Join & Create Plans with Friends</p>
       </motion.div>
 

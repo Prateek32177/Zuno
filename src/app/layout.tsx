@@ -22,14 +22,14 @@ export const metadata: Metadata = {
   ),
 
   title: {
-    default: "Zuno — Find Plans. Join Instantly.",
-    template: "%s | Zuno",
+    default: "Zipout | Find Plans. Meet peoples.",
+    template: "%s | Zipout",
   },
 
   description:
     "Discover real people, real plans. Join instantly and just show up.",
 
-  applicationName: "Zuno",
+  applicationName: "Zipout",
 
   keywords: [
     "group plans",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "Find Plans. Join Instantly.",
     description: "Scroll real plans. Join instantly. Show up.",
     url: "/",
-    siteName: "Zuno",
+    siteName: "Zipout",
     images: [
       {
         url: "/og-image.png", // make sure this exists
@@ -77,7 +77,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* ✅ iOS PWA Fix */}
-        <meta name="apple-mobile-web-app-title" content="Zuno" />
+        <meta name="apple-mobile-web-app-title" content="Zipout" />
         <link rel="manifest" href="/manifest.json" />
       </head>
 

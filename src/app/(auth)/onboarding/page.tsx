@@ -167,7 +167,7 @@ export default function OnboardingPage() {
     }
 
     if (Number(age) < 18) {
-      toast.error("You must be 18+ to use Zuno");
+      toast.error("You must be 18+ to use Zipout");
       return;
     }
     const { error } = await supabase
@@ -208,7 +208,7 @@ export default function OnboardingPage() {
       return;
     }
 
-    toast.success("Profile saved", { description: "Welcome to Zuno!" });
+    toast.success("Profile saved", { description: "Welcome to Zipout!" });
     router.replace("/feed");
   };
 

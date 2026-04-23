@@ -1,4 +1,4 @@
--- Zuno MVP schema + RLS policies
+-- Zipout MVP schema + RLS policies
 -- Apply with: supabase db reset / supabase db push
 
 create extension if not exists pgcrypto;

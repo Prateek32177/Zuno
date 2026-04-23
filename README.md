@@ -1,4 +1,4 @@
-# Zuno - Group Plans & Events App
+# Zipout - Group Plans & Events App
 
 A beautiful, modern mobile-first app for creating and joining local group activities with friends. Built with Next.js, React, Tailwind CSS, Framer Motion, and Supabase.
 
@@ -53,7 +53,7 @@ A beautiful, modern mobile-first app for creating and joining local group activi
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd Zuno
+cd Zipout
 
 # Install dependencies
 npm install
@@ -90,7 +90,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Project Structure
 
 ```
-Zuno/
+Zipout/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/              # Authentication routes

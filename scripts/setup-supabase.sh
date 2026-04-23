@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Zuno Supabase Setup Script
-# This script sets up all necessary Supabase resources for the Zuno MVP
+# Zipout Supabase Setup Script
+# This script sets up all necessary Supabase resources for the Zipout MVP
 
 set -e
 
-echo "🚀 Starting Zuno Supabase Setup..."
+echo "🚀 Starting Zipout Supabase Setup..."
 
 # Check if supabase CLI is installed
 if ! command -v supabase &> /dev/null; then

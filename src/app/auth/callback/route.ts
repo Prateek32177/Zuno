@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     const payload = {
       id: user.id,
       name:
-        user.user_metadata?.name || user.email?.split("@")[0] || "Zuno User",
+        user.user_metadata?.name || user.email?.split("@")[0] || "Zipout User",
       avatar_url: null,
       avatar_seed: user.id.replace(/-/g, "").slice(0, 12),
       instagram_handle: null,

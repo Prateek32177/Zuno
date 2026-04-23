@@ -84,7 +84,7 @@ export async function notifyReport(payload: {
   reporterId: string
   details?: string | null
 }) {
-  const text = `Zuno report ${payload.reportId}: ${payload.reason} on ${payload.targetType}:${payload.targetId} by ${payload.reporterId}${payload.details ? ` | ${payload.details}` : ''}`
+  const text = `Zipout report ${payload.reportId}: ${payload.reason} on ${payload.targetType}:${payload.targetId} by ${payload.reporterId}${payload.details ? ` | ${payload.details}` : ''}`
 
   const slackWebhook = process.env.SLACK_WEBHOOK_URL
   if (slackWebhook) {
@@ -110,9 +110,9 @@ export async function notifyReport(payload: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.REPORT_EMAIL_FROM || 'Zuno Safety <safety@zuno.app>',
+          from: process.env.REPORT_EMAIL_FROM || 'Zipout Safety <safety@zuno.app>',
           to: [alertEmail],
-          subject: `New Zuno report: ${payload.reason}`,
+          subject: `New Zipout report: ${payload.reason}`,
           text,
         }),
       })

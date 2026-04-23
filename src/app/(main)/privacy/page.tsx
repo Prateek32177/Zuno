@@ -8,7 +8,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-semibold text-base">What we collect</h2>
           <p className="mt-2">
-            Zuno collects basic account information provided via Google sign-in
+            Zipout collects basic account information provided via Google sign-in
             (name, email, profile photo), content you create on the platform
             (plans, descriptions, messages), and usage data such as device type
             and app activity. If you add a phone number, that is stored as part
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
           <p className="mt-2">
             Your data is used solely to operate the platform — displaying your
             profile, showing your plans, and enabling discovery by other users.
-            Zuno does not sell your data to third parties. Zuno does not use
+            Zipout does not sell your data to third parties. Zipout does not use
             your data for advertising.
           </p>
         </section>
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-semibold text-base">Data storage</h2>
           <p className="mt-2">
-            Your data is stored on secure third-party infrastructure. Zuno
+            Your data is stored on secure third-party infrastructure. Zipout
             takes reasonable steps to protect your data but cannot guarantee
             absolute security.
           </p>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-semibold text-base">Law enforcement</h2>
           <p className="mt-2">
-            Zuno may retain and disclose data where required by Indian law or in
+            Zipout may retain and disclose data where required by Indian law or in
             response to valid legal process, including requests from law
             enforcement agencies.
           </p>

@@ -4,7 +4,7 @@ export default function SafetyPage() {
       <h1 className="text-2xl font-bold">Safety Guidelines</h1>
       <p className="mt-1 text-xs text-[#6f6258]">Last updated: 21 April 2026</p>
       <p className="mt-2 text-sm text-[#6f6258] leading-6">
-        Zuno connects people for real-world plans. We provide the platform —
+        Zipout connects people for real-world plans. We provide the platform —
         your safety decisions are yours to make. Please read this carefully
         before joining or creating any plan.
       </p>
@@ -116,11 +116,11 @@ export default function SafetyPage() {
               Be cautious of users who try to move communication off the
               platform quickly or ask for personal contact details early.
             </li>
-            <li>No legitimate plan on Zuno requires payment to join.</li>
+            <li>No legitimate plan on Zipout requires payment to join.</li>
             <li>
-              Zuno does not charge any fee to join or host plans. If anyone on
-              the platform asks you to pay a fee to Zuno or claims to represent
-              Zuno while asking for money, it is fraud — report it immediately.
+              Zipout does not charge any fee to join or host plans. If anyone on
+              the platform asks you to pay a fee to Zipout or claims to represent
+              Zipout while asking for money, it is fraud — report it immediately.
             </li>
             <li>
               Any plan expenses (food, venue, activities) are agreed between you
@@ -152,10 +152,10 @@ export default function SafetyPage() {
             </li>
             <li>
               If you experience or witness something dangerous, contact local
-              emergency services first. Then report it on Zuno.
+              emergency services first. Then report it on Zipout.
             </li>
             <li>
-              Reports are reviewed by Zuno. Action may include plan removal,
+              Reports are reviewed by Zipout. Action may include plan removal,
               account suspension, or cooperation with law enforcement.
             </li>
           </ul>
@@ -183,11 +183,11 @@ export default function SafetyPage() {
         </section>
 
         <section>
-          <h2 className="font-semibold text-base">What Zuno cannot do</h2>
+          <h2 className="font-semibold text-base">What Zipout cannot do</h2>
           <p className="mt-2 text-[#6f6258]">
-            We want to be honest with you. Zuno cannot verify the identity or
+            We want to be honest with you. Zipout cannot verify the identity or
             real-world intentions of every user. We cannot be present at
-            meetups. We cannot guarantee that every person you meet through Zuno
+            meetups. We cannot guarantee that every person you meet through Zipout
             is safe. No platform can. What we can do is provide tools to report
             bad actors, remove harmful content, and cooperate with authorities
             when required. The rest is in your hands — and we trust you to make
@@ -216,7 +216,7 @@ export default function SafetyPage() {
       </div>
 
       <p className="mt-10 text-xs text-[#9f9089]">
-        Your safety matters. Zuno is a platform — what you do with it is your
+        Your safety matters. Zipout is a platform — what you do with it is your
         responsibility. Please use it thoughtfully.
       </p>
     </main>

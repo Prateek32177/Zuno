@@ -53,7 +53,7 @@ export default function ZunoPreloader() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70" />
 
       <div className="relative flex h-full flex-col items-center justify-center text-white">
-        <div className="mb-4 text-3xl font-semibold tracking-tight">Zuno</div>
+        <div className="mb-4 text-3xl font-semibold tracking-tight">Zipout</div>
 
         <div className="h-8 flex items-center justify-center">
           {phase === "lines" ? (

@@ -1,4 +1,4 @@
-# Zuno Supabase + Auth Setup (Latest Fix Guide)
+# Zipout Supabase + Auth Setup (Latest Fix Guide)
 
 ## 1) Environment variables
 ```bash

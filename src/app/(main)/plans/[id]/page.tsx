@@ -86,7 +86,7 @@ export async function generateMetadata({
       url: planUrl,
       title: ogTitle,
       description: ogDescription,
-      siteName: "Zuno",
+      siteName: "Zipout",
       images: [
         {
           url: ogImage,

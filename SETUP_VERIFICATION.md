@@ -1,6 +1,6 @@
-# 🚀 Zuno MVP - Complete Setup & Verification Guide
+# 🚀 Zipout MVP - Complete Setup & Verification Guide
 
-This guide walks you through setting up and verifying the complete Zuno MVP application.
+This guide walks you through setting up and verifying the complete Zipout MVP application.
 
 ## ✅ Pre-Flight Checklist
 
@@ -15,7 +15,7 @@ Before you start, make sure you have:
 
 ### 1.1 Clone & Install
 ```bash
-cd /Users/prateekjain/Documents/repos/Zuno
+cd /Users/prateekjain/Documents/repos/Zipout
 npm install
 ```
 
@@ -117,7 +117,7 @@ Try to login (you can use test credentials for now)
    - Should redirect to `/feed`
 
 2. **Feed Page** → http://localhost:3000/feed
-   - ✓ See beautiful Zuno header with rotating flame emoji
+   - ✓ See beautiful Zipout header with rotating flame emoji
    - ✓ Category filter pills
    - ✓ Empty state message
    - ✓ Smooth animations
@@ -399,6 +399,6 @@ SELECT COUNT(*) FROM plans;      # ✓ Returns count
 
 ---
 
-🎉 **Congratulations!** Your Zuno MVP is ready for deployment and production use!
+🎉 **Congratulations!** Your Zipout MVP is ready for deployment and production use!
 
 For support or issues, check the README.md or raise an issue on GitHub.

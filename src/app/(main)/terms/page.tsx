@@ -7,8 +7,8 @@ export default function TermsPage() {
         creation
       </p>
       <p className="mt-3 text-sm leading-6 text-[#6f6258]">
-        Zuno is a digital platform that helps people discover and join social
-        plans. By creating an account or using Zuno, you agree to these terms in
+        Zipout is a digital platform that helps people discover and join social
+        plans. By creating an account or using Zipout, you agree to these terms in
         full. If you do not agree, do not use the platform.
       </p>
 
@@ -18,32 +18,32 @@ export default function TermsPage() {
             1. Platform role and limitations
           </h2>
           <p className="mt-2">
-            Zuno is a coordination and discovery platform only. Zuno does not
+            Zipout is a coordination and discovery platform only. Zipout does not
             create, organise, host, manage, supervise, or participate in any
-            plan listed on the platform. Zuno has no physical presence at any
+            plan listed on the platform. Zipout has no physical presence at any
             meetup or event arising from use of the platform. All plans are
             created entirely by users acting independently.
           </p>
           <p className="mt-2">
-            Zuno is not a background-check service, identity-verification
+            Zipout is not a background-check service, identity-verification
             service, safety agency, or event organiser. The existence of a plan
-            on Zuno does not constitute any endorsement, recommendation, or
-            guarantee by Zuno.
+            on Zipout does not constitute any endorsement, recommendation, or
+            guarantee by Zipout.
           </p>
         </section>
 
         <section>
           <h2 className="font-semibold text-base">2. Eligibility</h2>
           <p className="mt-2">
-            You must be at least 18 years old to create an account or use Zuno.
+            You must be at least 18 years old to create an account or use Zipout.
             By registering, you represent and warrant that you are 18 or older
             and have the legal capacity to enter into a binding agreement. If
-            Zuno discovers or reasonably suspects that a user is under 18, the
+            Zipout discovers or reasonably suspects that a user is under 18, the
             account will be terminated immediately and without notice.
           </p>
           <p className="mt-2">
   If a parent or guardian discovers that a minor has created an account on
-  Zuno, they should contact us immediately at the support email listed in
+  Zipout, they should contact us immediately at the support email listed in
   the app. We will terminate the account and delete associated data promptly
   upon verification.
 </p>
@@ -54,24 +54,24 @@ export default function TermsPage() {
             3. In-person meetings — your sole responsibility
           </h2>
           <p className="mt-2 font-medium text-[#2f2721]">
-            Plans on Zuno may involve meeting strangers in person. This is the
+            Plans on Zipout may involve meeting strangers in person. This is the
             nature of the platform. You acknowledge and accept that:
           </p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
             <li>
-              Zuno has no presence at, control over, or responsibility for any
+              Zipout has no presence at, control over, or responsibility for any
               in-person interaction, meetup, or event that occurs as a result of
               using the platform.
             </li>
             <li>You choose to attend any plan entirely at your own risk.</li>
             <li>
-              Zuno cannot and does not guarantee the identity, character,
+              Zipout cannot and does not guarantee the identity, character,
               intentions, or conduct of any other user you meet through the
               platform.
             </li>
             <li>
               Any harm, loss, injury, or negative outcome arising from an
-              in-person meeting is not the responsibility of Zuno.
+              in-person meeting is not the responsibility of Zipout.
             </li>
             <li>
               You are solely responsible for your own safety decisions before,
@@ -85,10 +85,10 @@ export default function TermsPage() {
             4. Identity and verification
           </h2>
           <p className="mt-2">
-            Zuno does not verify the real-world identity of users beyond basic
+            Zipout does not verify the real-world identity of users beyond basic
             account registration (such as Google sign-in). Phone verification,
             where available, is a trust signal only and does not constitute
-            identity verification. Zuno makes no representation that any user is
+            identity verification. Zipout makes no representation that any user is
             who they claim to be. You should not assume that any profile is
             accurate, complete, or trustworthy.
           </p>
@@ -98,7 +98,7 @@ export default function TermsPage() {
           <h2 className="font-semibold text-base">
             5. User conduct and prohibited use
           </h2>
-          <p className="mt-2">You agree not to use Zuno to:</p>
+          <p className="mt-2">You agree not to use Zipout to:</p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
             <li>Harass, threaten, stalk, or harm any other user</li>
             <li>Impersonate any person or misrepresent your identity</li>
@@ -119,7 +119,7 @@ export default function TermsPage() {
           </ul>
           <p className="mt-2">
             Violation of any of the above may result in immediate account
-            suspension or permanent ban, at Zuno's sole discretion, with or
+            suspension or permanent ban, at Zipout's sole discretion, with or
             without notice.
           </p>
         </section>
@@ -128,26 +128,26 @@ export default function TermsPage() {
             6a. Plan participation and expenses
           </h2>
           <p className="mt-2">
-            Zuno does not require, pressure, or encourage any user to join or
+            Zipout does not require, pressure, or encourage any user to join or
             remain in any plan. Users may leave any plan at any time, for any
             reason, with no obligation to explain or justify their decision.
           </p>
           <p className="mt-2">
-            Zuno is currently free to use. Zuno charges no subscription fees,
+            Zipout is currently free to use. Zipout charges no subscription fees,
             membership fees, or commissions of any kind to users or plan hosts.
           </p>
           <p className="mt-2">
             Any expenses incurred in connection with a plan — including venue
             costs, activity costs, food, transport, or any other cost — are
             entirely a matter of mutual agreement between the host and
-            participants. Zuno does not set, mandate, or endorse any expense
+            participants. Zipout does not set, mandate, or endorse any expense
             arrangement.
           </p>
           <p className="mt-2">
-            Zuno provides an optional expense-splitting feature and a UPI
+            Zipout provides an optional expense-splitting feature and a UPI
             payment button as a convenience tool only. This allows participants
-            to pay a host directly via UPI. Zuno does not process, hold,
-            facilitate, or take any commission from these payments. Zuno is not
+            to pay a host directly via UPI. Zipout does not process, hold,
+            facilitate, or take any commission from these payments. Zipout is not
             a party to any payment transaction and accepts no responsibility for
             payment disputes, failed transactions, or misuse of the payment
             feature.
@@ -155,17 +155,17 @@ export default function TermsPage() {
           <p className="mt-2">
             Any payment made through the UPI feature is made directly between
             users. If a payment dispute arises, it is between the payer and the
-            recipient — Zuno has no involvement and no liability.
+            recipient — Zipout has no involvement and no liability.
           </p>
         </section>
         <section>
           <h2 className="font-semibold text-base">6. User-generated content</h2>
           <p className="mt-2">
-            You retain ownership of the content you post on Zuno (plans, photos,
-            descriptions, messages). By posting content, you grant Zuno a
+            You retain ownership of the content you post on Zipout (plans, photos,
+            descriptions, messages). By posting content, you grant Zipout a
             non-exclusive, royalty-free, worldwide licence to display, store,
             and distribute that content solely for the purpose of operating the
-            platform. Zuno does not claim ownership of your content.
+            platform. Zipout does not claim ownership of your content.
           </p>
           <p className="mt-2">
             You are solely responsible for the content you post. You represent
@@ -179,8 +179,8 @@ export default function TermsPage() {
             If you witness or experience behaviour that violates these terms —
             including harassment, fraud, threats, or unsafe situations — you
             agree to report it through the platform's reporting tools as soon as
-            reasonably practicable. Zuno will review reports in good faith and
-            may take action at its discretion. Zuno is not obligated to act on
+            reasonably practicable. Zipout will review reports in good faith and
+            may take action at its discretion. Zipout is not obligated to act on
             every report but will endeavour to address credible safety concerns.
           </p>
         </section>
@@ -190,11 +190,11 @@ export default function TermsPage() {
             8. Moderation and account termination
           </h2>
           <p className="mt-2">
-            Zuno reserves the right to review, remove, or restrict any plan,
+            Zipout reserves the right to review, remove, or restrict any plan,
             content, or account at any time, for any reason, without prior
             notice or liability. This includes but is not limited to accounts
             that violate these terms, accounts that generate safety complaints,
-            and accounts that Zuno reasonably believes pose a risk to other
+            and accounts that Zipout reasonably believes pose a risk to other
             users or the platform.
           </p>
           <p className="mt-2">
@@ -208,9 +208,9 @@ export default function TermsPage() {
             9. Disclaimer of warranties
           </h2>
           <p className="mt-2">
-            Zuno is provided "as is" and "as available" without any warranty of
-            any kind, express or implied. Zuno does not warrant that the
-            platform will be uninterrupted, error-free, or secure. Zuno does not
+            Zipout is provided "as is" and "as available" without any warranty of
+            any kind, express or implied. Zipout does not warrant that the
+            platform will be uninterrupted, error-free, or secure. Zipout does not
             guarantee the accuracy, completeness, or reliability of any user
             profile, plan, or content on the platform.
           </p>
@@ -221,7 +221,7 @@ export default function TermsPage() {
             10. Limitation of liability
           </h2>
           <p className="mt-2">
-            To the maximum extent permitted by applicable law, Zuno and its
+            To the maximum extent permitted by applicable law, Zipout and its
             owner(s) shall not be liable for any direct, indirect, incidental,
             special, consequential, or punitive damages arising out of or in
             connection with your use of the platform, including but not limited
@@ -230,7 +230,7 @@ export default function TermsPage() {
             resulting from interactions with other users on or off the platform.
           </p>
           <p className="mt-2">
-            Your use of Zuno is entirely at your own risk. This limitation
+            Your use of Zipout is entirely at your own risk. This limitation
             applies regardless of the legal theory under which the claim is
             brought.
           </p>
@@ -241,9 +241,9 @@ export default function TermsPage() {
             11. Law enforcement cooperation
           </h2>
           <p className="mt-2">
-            Zuno will cooperate with law enforcement agencies and comply with
+            Zipout will cooperate with law enforcement agencies and comply with
             valid legal requests, including disclosure of account information,
-            where required by applicable law. Users agree that Zuno may share
+            where required by applicable law. Users agree that Zipout may share
             account data (including registration details, activity logs, and
             reported content) with authorities in response to lawful requests.
           </p>
@@ -255,7 +255,7 @@ export default function TermsPage() {
           </h2>
           <p className="mt-2">
             These terms are governed by the laws of India. Any dispute arising
-            from these terms or your use of Zuno shall be subject to the
+            from these terms or your use of Zipout shall be subject to the
             jurisdiction of the competent courts of India.
           </p>
         </section>
@@ -265,7 +265,7 @@ export default function TermsPage() {
             13. Changes to these terms
           </h2>
           <p className="mt-2">
-            Zuno may update these terms at any time. Continued use of the
+            Zipout may update these terms at any time. Continued use of the
             platform after changes are posted constitutes acceptance of the
             revised terms. It is your responsibility to review these terms
             periodically.
@@ -275,8 +275,8 @@ export default function TermsPage() {
         <section>
           <h2 className="font-semibold text-base">14. Contact</h2>
           <p className="mt-2">
-            For questions, reports, or legal notices, contact Zuno at the
-            support email listed in the app. Zuno is operated by an individual
+            For questions, reports, or legal notices, contact Zipout at the
+            support email listed in the app. Zipout is operated by an individual
             and is not a registered company. These terms represent the entire
             agreement between you and the platform operator.
           </p>
@@ -284,7 +284,7 @@ export default function TermsPage() {
       </div>
 
       <p className="mt-10 text-xs text-[#9f9089]">
-        By using Zuno, you confirm you have read, understood, and agreed to
+        By using Zipout, you confirm you have read, understood, and agreed to
         these terms.
       </p>
     </main>

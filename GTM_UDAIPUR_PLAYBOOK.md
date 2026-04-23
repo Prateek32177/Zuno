@@ -1,7 +1,7 @@
-# Zuno GTM – Udaipur Launch Playbook (Shareable)
+# Zipout GTM – Udaipur Launch Playbook (Shareable)
 
 ## Launch thesis
-Zuno should win by density, not breadth.
+Zipout should win by density, not breadth.
 Start with **one live zone** and create repeatable loops.
 
 ## Phase rollout
