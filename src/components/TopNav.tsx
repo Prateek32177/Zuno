@@ -64,9 +64,10 @@ export function TopNav() {
           {/* LEFT: BRAND */}
           <div className="flex flex-col leading-none">
             <div className="flex items-center gap-2">
-                    <div className="text-xl font-semibold tracking-tight text-[#D46A4A]">Zipout</div>
+              <a href="/feed" className="text-xl font-medium tracking-tight text-[#FF5A3C]">
+                zipout
+              </a>
             </div>
-
             <p className="mt-1 text-[12px] text-[#6b6257]">
               Real plans. Real people.
             </p>

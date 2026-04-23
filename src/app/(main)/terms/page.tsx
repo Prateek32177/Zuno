@@ -1,6 +1,6 @@
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-5 py-10 text-[#2f2721]">
+    <main className="mx-auto max-w-3xl px-5 py-10 mb-20 text-[#2f2721]">
       <h1 className="text-2xl font-bold">Terms of Service</h1>
       <p className="mt-1 text-xs text-[#6f6258]">
         Last updated: 21 April 2026 · Effective immediately upon account
