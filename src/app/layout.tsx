@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Zipout",
     images: [
       {
-        url: "/og-image.png", // make sure this exists
+        url: "/og-image.webp", // make sure this exists
         width: 1200,
         height: 630,
       },
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Find Plans. Join Instantly.",
     description: "Scroll real plans. Join instantly. Show up.",
-    images: ["/og-image.png"],
+    images: ["/og-image.webp"],
   },
 };
 
