@@ -84,23 +84,27 @@ export async function notifyReport(payload: {
   reporterId: string
   details?: string | null
 }) {
-  const text = `Zipout report ${payload.reportId}: ${payload.reason} on ${payload.targetType}:${payload.targetId} by ${payload.reporterId}${payload.details ? ` | ${payload.details}` : ''}`
-
-  const slackWebhook = process.env.SLACK_WEBHOOK_URL
-  if (slackWebhook) {
-    try {
-      await fetch(slackWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      })
-    } catch {
-      // ignore
-    }
-  }
-
   const alertEmail = process.env.REPORT_ALERT_EMAIL
   const resendKey = process.env.RESEND_API_KEY
+
+  const adminLink = `${process.env.NEXT_PUBLIC_APP_URL}/admin/moderations`
+
+  const text = `
+🚨 New Report Received on Zipout
+
+Report ID: ${payload.reportId}
+Reason: ${payload.reason}
+Target: ${payload.targetType} (ID: ${payload.targetId})
+Reported By: ${payload.reporterId}
+
+${payload.details ? `Additional Details:\n${payload.details}\n` : ''}
+
+Review here:
+${adminLink}
+
+— Zipout Safety System
+`.trim()
+
   if (alertEmail && resendKey) {
     try {
       await fetch('https://api.resend.com/emails', {
@@ -110,9 +114,11 @@ export async function notifyReport(payload: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.REPORT_EMAIL_FROM || 'Zipout Safety <safety@zipout.app>',
+          from:
+            process.env.REPORT_EMAIL_FROM ||
+            'Zipout Safety <alerts@hookflo.com>',
           to: [alertEmail],
-          subject: `New Zipout report: ${payload.reason}`,
+          subject: `🚨 New Report: ${payload.reason}`,
           text,
         }),
       })

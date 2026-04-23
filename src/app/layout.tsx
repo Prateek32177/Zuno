@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/toast";
 import Preloader from "@/components/Preloader";
 import { Poppins } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next"
 
 const poppins = Poppins({
   weight: ["400", "500", "600"],
@@ -82,6 +83,7 @@ export default function RootLayout({
       </head>
 
       <body className={poppins.className}>
+         <Analytics />
         <Preloader />
 
         <main className="min-h-screen">{children}</main>
