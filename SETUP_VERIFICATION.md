@@ -43,7 +43,7 @@ EOF
 
 1. Go to Supabase Dashboard → SQL Editor
 2. Click "New Query" → "New blank query"
-3. Copy entire content from: `supabase/migrations/20260413000000_zuno_mvp_schema.sql`
+3. Copy entire content from: `supabase/migrations/20260413000000_zipout_mvp_schema.sql`
 4. Paste it into the query editor
 5. Click "Run"
 6. Wait for success message ✅

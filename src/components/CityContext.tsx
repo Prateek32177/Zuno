@@ -10,7 +10,7 @@ type CityContextValue = {
 
 const CityContext = createContext<CityContextValue | null>(null)
 
-const CITY_STORAGE_KEY = 'zuno:selected-city'
+const CITY_STORAGE_KEY = 'zipout:selected-city'
 
 export function CityProvider({ children }: { children: React.ReactNode }) {
   const [selectedCity, setSelectedCity] = useState(DEFAULT_LAUNCH_CITY)

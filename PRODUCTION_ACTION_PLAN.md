@@ -7,7 +7,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_ANON_KEY
 ```
 
 ## 2) Run migrations in order
-1. `supabase/migrations/20260413000000_zuno_mvp_schema.sql`
+1. `supabase/migrations/20260413000000_zipout_mvp_schema.sql`
 2. `supabase/migrations/20260413010000_add_google_maps_link.sql`
 3. `supabase/migrations/20260413020000_hardening_auth_and_maps.sql`
 4. `supabase/migrations/20260413030000_social_favorites_city.sql`

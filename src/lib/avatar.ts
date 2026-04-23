@@ -15,6 +15,6 @@ export const getUserAvatarUrl = ({
   fallbackSeed?: string | null
 }) => {
   if (avatarUrl?.trim()) return avatarUrl
-  const seed = avatarSeed?.trim() || fallbackSeed?.trim() || 'zuno-user'
+  const seed = avatarSeed?.trim() || fallbackSeed?.trim() || 'zipout-user'
   return buildDicebearAvatarUrl(seed)
 }

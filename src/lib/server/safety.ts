@@ -60,7 +60,7 @@ export async function hasBlockBetween(supabase: SupabaseClient, a?: string | nul
 
 export async function isAdminUser(supabase: SupabaseClient, userId?: string | null): Promise<boolean> {
   if (!userId) return false
-  const envAdmins = (process.env.ZUNO_ADMIN_USER_IDS || '')
+  const envAdmins = (process.env.ZIPOUT_ADMIN_USER_IDS || '')
     .split(',')
     .map((x) => x.trim())
     .filter(Boolean)
@@ -110,7 +110,7 @@ export async function notifyReport(payload: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.REPORT_EMAIL_FROM || 'Zipout Safety <safety@zuno.app>',
+          from: process.env.REPORT_EMAIL_FROM || 'Zipout Safety <safety@zipout.app>',
           to: [alertEmail],
           subject: `New Zipout report: ${payload.reason}`,
           text,

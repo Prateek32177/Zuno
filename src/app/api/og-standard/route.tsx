@@ -86,7 +86,7 @@ export async function GET(req: Request) {
                     letterSpacing: "4px",
                   }}
                 >
-                  ZUNO
+                  ZIPOUT
                 </div>
               </div>
 

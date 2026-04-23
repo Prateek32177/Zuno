@@ -76,7 +76,7 @@ chmod +x scripts/setup-supabase.sh
 # 1. Go to https://supabase.com and create a new project
 # 2. Copy the project URL and public key to .env.local
 # 3. Go to SQL Editor in Supabase Dashboard
-# 4. Run the migration SQL from supabase/migrations/20260413000000_zuno_mvp_schema.sql
+# 4. Run the migration SQL from supabase/migrations/20260413000000_zipout_mvp_schema.sql
 ```
 
 ### 4. **Run Development Server**
@@ -284,7 +284,7 @@ MIT License - feel free to use this for any purpose
 
 ## Support
 
-- 📧 Email: support@zuno.local
+- 📧 Email: support@zipout.local
 - 💬 Discord: [Community Server]
 - 🐛 Issues: GitHub Issues
 

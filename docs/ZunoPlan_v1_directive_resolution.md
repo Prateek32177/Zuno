@@ -1,4 +1,4 @@
-# ZunoPlan Comprehensive Directive — Implementation Log
+# ZipoutPlan Comprehensive Directive — Implementation Log
 
 Date: 2026-04-18
 

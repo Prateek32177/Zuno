@@ -66,7 +66,7 @@ export default function PlanShareCardOG({ plan }: { plan: any }) {
 
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `zuno-${shortSlug(plan)}.png`;
+      link.download = `zipout-${shortSlug(plan)}.png`;
       link.click();
     } catch (err) {
       console.error(err);
@@ -85,11 +85,11 @@ export default function PlanShareCardOG({ plan }: { plan: any }) {
         await navigator.share({
           title: plan.title,
           text: `${plan.title} · ${plan.location}`,
-          url: `https://zuno.app/p/${plan.id}`,
+          url: `https://zipout.in/${plan.id}`,
         });
       } else {
         await navigator.clipboard.writeText(
-          `https://zuno.app/p/${plan.id}`
+          `https://zipout.in/${plan.id}`
         );
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -101,7 +101,7 @@ export default function PlanShareCardOG({ plan }: { plan: any }) {
 
   async function handleCopy() {
     await navigator.clipboard.writeText(
-      `https://zuno.app/p/${plan.id}`
+      `https://zipout.in/${plan.id}`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

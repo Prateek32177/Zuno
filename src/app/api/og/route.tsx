@@ -145,7 +145,7 @@ export async function GET(req: Request) {
                 "0 4px 20px rgba(255, 213, 74, 0.3), 0 2px 10px rgba(0,0,0,0.5)",
             }}
           >
-            zuno
+            zipout
           </div>
           {/* Diamond ornament - Right */}
           <div
@@ -521,7 +521,7 @@ export async function GET(req: Request) {
                 letterSpacing: "1px",
               }}
             >
-              zuno.app/p/{slug}
+              zipout.app/p/{slug}
             </div> */}
         </div>
       </div>

@@ -184,7 +184,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
 
   const upiLink =
     plan.host?.gpay_link && perPersonShare
-      ? `upi://pay?pa=${encodeURIComponent(plan.host.gpay_link)}&pn=${encodeURIComponent(plan.host?.upi_payee_name || plan.host?.name || "Host")}&am=${encodeURIComponent(perPersonShare.toFixed(2))}&cu=INR&tn=${encodeURIComponent(`ZunoPlan:${plan.title}`)}`
+      ? `upi://pay?pa=${encodeURIComponent(plan.host.gpay_link)}&pn=${encodeURIComponent(plan.host?.upi_payee_name || plan.host?.name || "Host")}&am=${encodeURIComponent(perPersonShare.toFixed(2))}&cu=INR&tn=${encodeURIComponent(`ZipoutPlan:${plan.title}`)}`
       : null;
 
   // ─── Single source-of-truth for the OG image URL ───────────────

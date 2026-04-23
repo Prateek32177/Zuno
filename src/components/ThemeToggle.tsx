@@ -15,7 +15,7 @@ export function ThemeToggle() {
     const next = !dark
     setDark(next)
     document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-    localStorage.setItem('zuno-theme', next ? 'dark' : 'light')
+    localStorage.setItem('zipout-theme', next ? 'dark' : 'light')
   }
 
   return (
