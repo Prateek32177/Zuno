@@ -56,7 +56,7 @@ export const Hero = () => {
          {/* Devanagari Watermark */}
          <div
            aria-hidden
-           className="pointer-events-none absolute inset-x-0 -top-10 select-none text-center font-deva text-[30vw] sm:text-[26vw] leading-none text-white/[0.07] blur-[1px] z-[1]"
+           className="pointer-events-none absolute inset-x-0 -top-10 select-none text-center font-deva text-[30vw] sm:text-[26vw] leading-none text-white/[0.1] blur-[1px] z-[1]"
          >
            ज़िपआउट
          </div>
