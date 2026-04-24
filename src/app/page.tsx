@@ -171,7 +171,7 @@ export default function Home() {
               />
             </a>
             <a
-              href="/create"
+              href="/plans/create"
               className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm sm:text-base text-white/80 border border-white/30 transition-all duration-300 hover:border-white/70 hover:text-white w-full sm:w-auto justify-center"
               style={{ fontFamily: "'system-ui', sans-serif" }}
             >
@@ -183,7 +183,7 @@ export default function Home() {
             className="mt-8 text-xs  tracking-widest uppercase"
             style={{ fontFamily: "'system-ui', sans-serif" }}
           >
-            Bangalore · Mumbai · Delhi · Udaipur
+            Bangalore • Mumbai • Delhi • Indore • Udaipur
           </p>
         </motion.div>
       </section>
@@ -544,7 +544,7 @@ export default function Home() {
                 />
               </a>
               <a
-                href="/create"
+                href="/plans/create"
                 className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm  border  transition-all duration-300  w-full sm:w-auto justify-center"
                 style={{ fontFamily: "'system-ui', sans-serif" }}
               >
