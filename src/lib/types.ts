@@ -1,3 +1,5 @@
+import type { PlanCategory } from "./categories"
+
 export interface User {
   id: string
   name: string
@@ -21,7 +23,6 @@ export interface User {
   created_at: string
 }
 
-export type PlanCategory = 'hiking' | 'food' | 'music' | 'cycling' | 'art' | 'travel' | 'sports' | 'other'
 export type PlanStatus = 'active' | 'full' | 'completed' | 'cancelled'
 export type PlanVisibility = 'public' | 'invite_only' | 'private'
 export type HostMode = 'host_managed' | 'open'

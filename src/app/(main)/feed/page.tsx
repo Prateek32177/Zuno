@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState, Suspense } from "react";
 import { PlanCard } from "@/components/PlanCard";
 import { BottomNav } from "@/components/BottomNav";
 import { Lock, Search } from "lucide-react";
-import type { Plan, PlanCategory } from "@/lib/types";
+import type { Plan } from "@/lib/types";
+import type { PlanCategory } from "@/lib/categories";
 import { CATEGORY_META } from "@/lib/categories";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { useCity } from "@/components/CityContext";
@@ -15,6 +16,7 @@ import { SignInDialog } from "@/components/auth/SignInDialog";
 import Link from "next/link";
 import { computeEffectivePlanStatus } from "@/lib/plan";
 import { PlanCardSkeleton } from "@/components/PlanCardSkeleton";
+import { getCityCategories } from "@/lib/categories";
 
 export default function FeedPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -47,9 +49,6 @@ export default function FeedPage() {
       .auth.getUser()
       .then(({ data }) => setIsAuthed(!!data.user));
   }, []);
-
-  const categories = Object.keys(CATEGORY_META) as PlanCategory[];
-
   const filteredPlans = useMemo(
     () =>
       plans
@@ -98,7 +97,7 @@ export default function FeedPage() {
       </Suspense>
 
       {/* HEADER */}
- <div className="sticky top-0 z-30 bg-[#F4EFEA]">
+      <div className="sticky top-0 z-30 bg-[#F4EFEA]">
         <div className="mx-auto max-w-md px-4 pt-5 pb-3">
           <div className="mb-4">
             <h1 className="text-[22px] font-semibold text-[#3A2E2A] tracking-[-0.01em]">
@@ -137,21 +136,19 @@ export default function FeedPage() {
                 All
               </button>
 
-              {categories.map((cat) => (
+              {getCityCategories(selectedCity).map((cat) => (
                 <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+                  key={cat.category}
+                  onClick={() => setSelectedCategory(cat.category)}
                   className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium whitespace-nowrap ${
-                    selectedCategory === cat
+                    selectedCategory === cat.category
                       ? "bg-[#5A3825] text-white"
                       : "bg-[#EFE7DA] text-[#5A3825]"
                   }`}
                 >
-                  <CategoryIcon
-                    icon={CATEGORY_META[cat].icon}
-                    className="h-3.5 w-3.5"
-                  />
-                  {CATEGORY_META[cat].label}
+                  <CategoryIcon icon={CATEGORY_META[cat.category].icon} />
+
+                  {cat.label}
                 </button>
               ))}
             </div>

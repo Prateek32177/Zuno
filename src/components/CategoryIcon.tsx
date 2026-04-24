@@ -1,16 +1,40 @@
-import { Bike, Mountain, Music2, Palette, Plane, Sparkles, Trophy, UtensilsCrossed } from 'lucide-react'
+import {
+  Sunrise,
+  Bike,
+  Trophy,
+  UtensilsCrossed,
+  Coffee,
+  Music2,
+  Users,
+  CalendarDays,
+  Mountain,
+  Sparkles,
+  type LucideIcon
+} from 'lucide-react'
 
-export function CategoryIcon({ icon, className = 'h-3.5 w-3.5' }: { icon: 'mountain' | 'utensils' | 'music' | 'bike' | 'palette' | 'plane' | 'trophy' | 'sparkles'; className?: string }) {
-  const map = {
-    mountain: Mountain,
-    utensils: UtensilsCrossed,
-    music: Music2,
-    bike: Bike,
-    palette: Palette,
-    plane: Plane,
-    trophy: Trophy,
-    sparkles: Sparkles,
+import type { PlanCategory } from '@/lib/categories'
+
+export function CategoryIcon({
+  icon,
+  className = 'h-3.5 w-3.5',
+}: {
+  icon: PlanCategory
+  className?: string
+}) {
+  const map: Record<PlanCategory, LucideIcon> = {
+    outdoor: Sunrise,
+    fitness: Bike,
+    sports: Trophy,
+    food: UtensilsCrossed,
+    cafe: Coffee,
+    nightlife: Music2,
+    hangout: Users,
+    events: CalendarDays,
+    trip: Mountain,
+    other: Sparkles,
   }
+
   const Icon = map[icon]
+  if (!Icon) return null // Safety fallback
   return <Icon className={className} />
 }

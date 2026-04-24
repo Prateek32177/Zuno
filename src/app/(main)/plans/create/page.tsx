@@ -13,14 +13,13 @@ import {
   XIcon,
 } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
-import { CATEGORY_META } from "@/lib/categories";
+import { CATEGORY_META, getCityCategories } from "@/lib/categories";
 import { CategoryIcon } from "@/components/CategoryIcon";
-import type { PlanCategory } from "@/lib/types";
 import { DEFAULT_LAUNCH_CITY, INDIA_HIGH_POTENTIAL_CITIES } from "@/lib/cities";
 import { useCity } from "@/components/CityContext";
 import { RichTextEditor, RichTextDisplay } from "@/components/RichTextEditor";
 import { createClient } from "@/lib/supabase/client";
-
+import type { PlanCategory } from "@/lib/categories";
 const steps = ["Details", "Meetup", "Settings", "Review"];
 
 function toDatetimeLocalValue(date: Date) {
@@ -231,22 +230,22 @@ export default function CreatePlanPage() {
               ))}
             </select>
             <div className="flex gap-2 flex-wrap">
-              {(Object.keys(CATEGORY_META) as PlanCategory[]).map((cat) => (
+              {getCityCategories(formData.city).map((cat) => (
                 <button
-                  key={cat}
+                  key={cat.category}
                   type="button"
-                  onClick={() => setFormData((p) => ({ ...p, category: cat }))}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs transition-colors ${
-                    formData.category === cat
+                  onClick={() => setFormData((p) => ({ ...p, category: cat.category }))}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap ${
+                    formData.category === cat.category
                       ? "bg-[#5A3825] text-white"
                       : "bg-[#EFE7DA] text-[#5A3825]"
                   }`}
                 >
                   <CategoryIcon
-                    icon={CATEGORY_META[cat].icon}
+                    icon={CATEGORY_META[cat.category].icon}
                     className="h-3 w-3"
                   />
-                  {CATEGORY_META[cat].label}
+                  {cat.label}
                 </button>
               ))}
             </div>

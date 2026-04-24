@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/toast";
 import { ChevronLeft, Info } from "lucide-react";
-import { CATEGORY_META } from "@/lib/categories";
+import { CATEGORY_META, getCityCategories } from "@/lib/categories";
 import { CategoryIcon } from "@/components/CategoryIcon";
-import type { PlanCategory } from "@/lib/types";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { INDIA_HIGH_POTENTIAL_CITIES } from "@/lib/cities";
+import { useCity } from "@/components/CityContext";
 
 export default function EditPlanPage() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function EditPlanPage() {
     visibility: "public",
     host_included_in_spots_and_splits: true,
   });
-
+  const { selectedCity, setSelectedCity } = useCity();
   useEffect(() => {
     const load = async () => {
       if (!id) return;
@@ -68,6 +68,9 @@ export default function EditPlanPage() {
       return toast.error("Failed to save plan", {
         description: data.error || "Please try again.",
       });
+    if (form.city !== selectedCity) {
+      setSelectedCity(form.city);
+    }
     toast.success("Plan updated");
     router.push(`/plans/${id}`);
   };
@@ -101,21 +104,23 @@ export default function EditPlanPage() {
             onChange={handleDescriptionChange}
             placeholder="Plan details"
           />
-          <div className="grid grid-cols-2 gap-2">
-            {(Object.keys(CATEGORY_META) as PlanCategory[]).map((cat) => (
+          <div className="flex gap-2 flex-wrap">
+            {getCityCategories(form.city).map((cat) => (
               <button
-                key={cat}
+                key={cat.category}
                 type="button"
-                onClick={() => update("category", cat)}
-                className={`rounded-xl border px-3 py-2 text-left text-xs ${form.category === cat ? "bg-orange-500 text-white border-orange-500" : "app-card"}`}
+                onClick={() => update("category", cat.category)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap ${
+                  form.category !== cat.category
+                    ? "text-[#5A3825] bg-white"
+                    : "text-[#EFE7DA] bg-[#5A3825]"
+                }`}
               >
-                <span className="inline-flex items-center gap-1">
-                  <CategoryIcon
-                    icon={CATEGORY_META[cat].icon}
-                    className="h-3 w-3"
-                  />{" "}
-                  {CATEGORY_META[cat].label}
-                </span>
+                <CategoryIcon
+                  icon={CATEGORY_META[cat.category].icon}
+                  className="h-3 w-3"
+                />
+                {cat.label}
               </button>
             ))}
           </div>
@@ -241,14 +246,20 @@ export default function EditPlanPage() {
             <div className="flex items-start gap-1">
               <Info className="mt-0.5 h-3.5 w-3.5 text-[#7A6A64]" />
               <div>
-                <p className="text-xs font-medium text-[#3A2E2A]">Include host in spots & split</p>
-                <p className="text-[11px] text-[#7A6A64]">If checked, max people includes host too.</p>
+                <p className="text-xs font-medium text-[#3A2E2A]">
+                  Include host in spots & split
+                </p>
+                <p className="text-[11px] text-[#7A6A64]">
+                  If checked, max people includes host too.
+                </p>
               </div>
             </div>
             <input
               type="checkbox"
               checked={!!form.host_included_in_spots_and_splits}
-              onChange={(e) => update("host_included_in_spots_and_splits", e.target.checked)}
+              onChange={(e) =>
+                update("host_included_in_spots_and_splits", e.target.checked)
+              }
               className="mt-0.5 h-4 w-4 rounded border-[#cbb9a6] text-[#5A3825] focus:ring-[#5A3825]"
             />
           </label>
