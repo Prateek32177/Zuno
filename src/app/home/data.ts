@@ -6,13 +6,12 @@ export const cities = [
 ] as const;
 
 export const rotatingWords = [
-  "bike ride.",
-  "chai run.",
-  "sutta break.",
-  "sunset walk.",
-  "gig night.",
-  "food crawl.",
-  "lake side.",
+  "bike ride",
+  "chai run",
+  "sunset walk",
+  "gig night",
+  "food crawl",
+  "lake side",
 ];
 
 export const instantPlans = [
