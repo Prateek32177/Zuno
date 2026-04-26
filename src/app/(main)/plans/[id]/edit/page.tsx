@@ -23,7 +23,7 @@ import { INDIA_HIGH_POTENTIAL_CITIES } from "@/lib/cities";
 import { useCity } from "@/components/CityContext";
 import { createClient } from "@/lib/supabase/client";
 
-const DEFAULT_BANNER_URL = "/images/default-plan-banner.jpg";
+const DEFAULT_BANNER_URL = "https://i.pinimg.com/736x/0d/e0/41/0de041a6672a9b2eaa49f19f4d3bf03b.jpg";
 const MAX_PEOPLE_PRESETS = [2, 4, 6, 10, 15, 20, 50];
 const COST_PRESETS = [0, 100, 200, 500, 1000, 2000];
 
