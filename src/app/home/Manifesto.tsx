@@ -5,62 +5,57 @@ export const Manifesto = () => {
   return (
     <section className="relative border-b border-ink/10 bg-paper-warm py-24">
       <div className="mx-auto max-w-7xl px-6">
-        {/* Magazine label */}
+        
+        {/* Label */}
         <div className="mb-12 grid gap-3 sm:grid-cols-[auto_1fr] sm:items-end">
           <div className="label-eyebrow">No. 02 / Manifesto</div>
           <div className="h-px w-full bg-ink/15" />
         </div>
 
         <div className="grid gap-12 lg:grid-cols-12">
+
+          {/* HEADLINE */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             className="lg:col-span-7"
           >
             <h2 className="font-serif-display text-4xl leading-[1.05] text-ink sm:text-5xl lg:text-[4.2rem]">
-              You're not looking for a{" "}
-              <span className="marker-underline px-1">plan</span>.
+              Plan nahi chahiye.
               <br />
-              You're looking for{" "}
-              <em className="text-coral-deep">people</em> to make it{" "}
-              <span className="italic underline decoration-coral decoration-[6px] underline-offset-[10px]">
-                real
-              </span>
-              .
+              <span className="marker-underline px-1">Log chahiye.</span>
             </h2>
           </motion.div>
 
+          {/* BODY */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="lg:col-span-5"
           >
-            <p className="font-mono text-[15px] leading-relaxed text-ink/75">
-              Zipout is not a ticketing app. Not an event page. No performers, no
-              sponsors, no curated experience.
+            <p className="font-mono text-[15px] leading-relaxed text-ink/70">
+              Koi bolta hai — <span className="text-ink">“chal na”</span>.
+              <br />
+              Tum bolte ho — <span className="text-coral-deep font-semibold">“aa raha hoon”</span>.
             </p>
-            <p className="mt-5 font-mono text-[15px] leading-relaxed text-ink/75">
-              It is just people — in Bangalore, Mumbai, Delhi, Udaipur — waking up
-              and saying <em className="not-italic text-ink">aaj kuch crazy karte hai</em>. And other people
-              saying <span className="text-coral-deep font-semibold">yes</span>.
-            </p>
-            <p className="mt-5 border-l-2 border-coral pl-4 font-serif-display text-xl italic leading-snug text-ink">
-              "You post a plan. Whoever wants in, joins. You all show up. Something real happens."
+
+            <p className="mt-5 border-l-2 border-coral pl-4 font-serif-display text-lg italic leading-snug text-ink">
+              Bas itna hi hai.
             </p>
           </motion.div>
         </div>
 
-        {/* Vs others */}
+        {/* VS SECTION */}
         <div className="mt-20">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h3 className="font-serif-display text-3xl leading-tight text-ink sm:text-4xl">
-              Why not Instagram / WhatsApp / Meetup?
+              Baaki apps?
             </h3>
-            <span className="label-eyebrow hidden sm:block">A short roast</span>
+            <span className="label-eyebrow hidden sm:block">thoda reality check</span>
           </div>
 
           <div className="grid gap-3">
@@ -70,23 +65,35 @@ export const Manifesto = () => {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.07 }}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
                 className={
                   row.highlight
-                    ? "relative -mx-2 grid grid-cols-[1fr_2fr] items-center gap-6 rounded-md bg-coral px-6 py-7 text-paper shadow-[0_18px_40px_-22px_rgba(255,90,60,0.7)] sm:-mx-4 sm:grid-cols-[260px_1fr] sm:rotate-[-0.6deg]"
-                    : "grid grid-cols-[1fr_2fr] items-center gap-6 border-b border-ink/15 py-5 sm:grid-cols-[260px_1fr]"
+                    ? "relative -mx-2 grid grid-cols-[1fr_2fr] items-center gap-6 rounded-md bg-coral px-6 py-6 text-paper shadow-[0_18px_40px_-22px_rgba(255,90,60,0.7)] sm:-mx-4 sm:grid-cols-[260px_1fr] sm:rotate-[-0.6deg]"
+                    : "grid grid-cols-[1fr_2fr] items-center gap-6 border-b border-ink/15 py-4 sm:grid-cols-[260px_1fr]"
                 }
               >
                 <div
-                  className={`font-serif-display ${row.highlight ? "text-3xl sm:text-4xl" : "text-2xl text-ink"}`}
+                  className={`font-serif-display ${
+                    row.highlight ? "text-3xl sm:text-4xl" : "text-xl text-ink"
+                  }`}
                 >
                   {row.q}
                 </div>
+
                 <div
-                  className={`font-mono text-sm leading-relaxed ${row.highlight ? "text-paper/95" : "text-ink/65"}`}
+                  className={`font-mono text-sm leading-relaxed ${
+                    row.highlight ? "text-paper/95" : "text-ink/60"
+                  }`}
                 >
-                  {row.a}
+                  {row.highlight
+                    ? "Abhi post. Abhi join. Aaj milte hain."
+                    : row.q === "Instagram"
+                    ? "Scroll karte raho."
+                    : row.q === "WhatsApp"
+                    ? "Plan kabhi fix nahi hota."
+                    : "3 hafte baad ka plan."}
                 </div>
+
                 {row.highlight && (
                   <span className="absolute -right-3 -top-4 rotate-[14deg] rounded-full bg-ink px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-paper">
                     yeh wala ✦

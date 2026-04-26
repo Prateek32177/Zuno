@@ -34,7 +34,7 @@ export const CityPlans = () => {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="mb-12 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="label-eyebrow mb-3 text-ink/50">No. 05 / Tumhaare sheher mein</div>
+            <div className="label-eyebrow mb-3 text-ink/50">No. 03 / Tumhaare sheher mein</div>
             <h2 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
               Your city,
               <br />

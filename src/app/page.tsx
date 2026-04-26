@@ -34,15 +34,9 @@ export default function Home() {
 
       {/* The Real Thing */}
       <Manifesto />
-      {/* Live feed preview */}
-      <LiveFeed />
-
       {/* City plans */}
 
       <CityPlans />
-      {/* Why Zipout */}
-
-      <WhyCards />
 
       <FinalCTA />
 
