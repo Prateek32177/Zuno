@@ -64,7 +64,10 @@ export function TopNav() {
           {/* LEFT: BRAND */}
           <div className="flex flex-col leading-none">
             <div className="flex items-center gap-2">
-              <a href="/feed" className="text-xl font-medium tracking-tight text-[#FF5A3C]">
+              <a
+                href="/feed"
+                className="text-xl font-medium tracking-tight text-[#FF5A3C]"
+              >
                 zipout
               </a>
             </div>
@@ -151,7 +154,7 @@ export function TopNav() {
             ) : (
               <button
                 onClick={() => setShowAuthDialog(true)}
-                className="rounded-full bg-[#1a1410] px-4 py-1.5 text-[12px] text-white"
+                className="rounded-full bg-[#2A1F1A] px-4 py-1.5 text-[12px] text-[#F7EEE5] "
               >
                 Login
               </button>
