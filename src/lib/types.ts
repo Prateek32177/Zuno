@@ -31,6 +31,7 @@ export type ParticipantStatus = 'pending' | 'joined' | 'left' | 'attended' | 'de
 export interface Plan {
   id: string
   host_id: string
+  short_id: string
   title: string
   description: string | null
   location_name: string

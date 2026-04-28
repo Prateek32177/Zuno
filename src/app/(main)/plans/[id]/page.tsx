@@ -75,8 +75,6 @@ export async function generateMetadata({
   const planUrl = `${SITE_URL}/plans/${plan.id}`;
 
   return {
-    // ✅ KEY FIX: metadataBase ensures Next.js resolves all relative
-    // image/url paths to absolute URLs that crawlers can actually fetch.
     metadataBase: new URL(SITE_URL),
 
     title: ogTitle,
