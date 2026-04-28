@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -42,7 +42,7 @@ const Wordmark = ({ tone = "light" }: { tone?: "light" | "dark" }) => (
   </a>
 );
 
-export default function page(){
+export default function page() {
   const [wordIndex, setWordIndex] = useState(0);
   const [installEvent, setInstallEvent] = useState<BIPEvent | null>(null);
   const [installed, setInstalled] = useState(false);
@@ -93,18 +93,17 @@ export default function page(){
     <main className="min-h-screen bg-paper text-ink antialiased">
       {/* ============== HERO ============== */}
       <section className="relative isolate overflow-hidden bg-coral text-paper">
-   <div
-  aria-hidden
-  className="pointer-events-none absolute inset-0 opacity-[0.19]"
-  style={{
-    backgroundImage:
-      "radial-gradient(hsl(var(--paper) / 0.9) 1px, transparent 1px)",
-    backgroundSize: "24px 24px",
-  }}
-/>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.19]"
+          style={{
+            backgroundImage:
+              "radial-gradient(hsl(var(--paper) / 0.9) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
 
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/30" />
-
 
         <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 pt-7">
           <Wordmark tone="light" />
@@ -145,9 +144,9 @@ export default function page(){
             </div>
 
             <p className="mt-7 max-w-xl text-base leading-relaxed text-paper/85 sm:text-lg">
-              Drop a thought, scroll the feed, show up. Split the bill or go
-              for free. No Reddit threads, no WhatsApp groups, no planning
-              committee — just plans, people, and yes or no.
+              Drop a thought, scroll the feed, show up. Split the bill or go for
+              free. No Reddit threads, no WhatsApp groups, no planning committee
+              — just plans, people, and yes or no.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -208,8 +207,8 @@ export default function page(){
       </section>
 
       {/* ============== HOW IT WORKS ============== */}
-<section className="relative bg-paper-soft py-28">
-  <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-coral/10 to-transparent" />
+      <section className="relative bg-paper-soft py-28">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-coral/10 to-transparent" />
         <div className="mx-auto max-w-6xl px-6">
           <div className="mb-14 flex flex-col items-center gap-3 text-center">
             <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-coral-deep">
@@ -218,7 +217,8 @@ export default function page(){
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-coral" />
             </span>
             <h2 className="max-w-2xl text-4xl font-semibold leading-[1.05] tracking-[-0.02em] sm:text-5xl">
-              Three taps. <span className="text-ink/40">That's the whole app.</span>
+              Three taps.{" "}
+              <span className="text-ink/40">That's the whole app.</span>
             </h2>
           </div>
 
@@ -253,8 +253,8 @@ export default function page(){
           </div>
 
           <p className="mt-12 text-center text-sm text-ink/55">
-            No DMs to chase. No groups to manage. Just plans, people, and yes
-            or no.
+            No DMs to chase. No groups to manage. Just plans, people, and yes or
+            no.
           </p>
         </div>
       </section>
@@ -348,7 +348,7 @@ export default function page(){
       </footer>
     </main>
   );
-};
+}
 
 /* ---------- subcomponents ---------- */
 

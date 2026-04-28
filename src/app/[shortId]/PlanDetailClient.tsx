@@ -111,9 +111,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
   ];
 
   const isHost = plan.current_user_id === plan.host_id;
-  const currentUserGender = String(
-    plan.current_user_gender || "",
-  ).toLowerCase();
+  const currentUserGender = String(plan.current_user_gender || "").toLowerCase();
   const isParticipant = (plan.participants || []).some(
     (p: any) => p.user_id === plan.current_user_id,
   );
@@ -183,10 +181,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
     joinedCount,
     hostIncluded,
   ]);
-  const shareUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/${plan.short_id}`
-      : `https://zipout.in/${plan.short_id}`;
+
   const upiLink =
     plan.host?.gpay_link && perPersonShare
       ? `upi://pay?pa=${encodeURIComponent(plan.host.gpay_link)}&pn=${encodeURIComponent(plan.host?.upi_payee_name || plan.host?.name || "Host")}&am=${encodeURIComponent(perPersonShare.toFixed(2))}&cu=INR&tn=${encodeURIComponent(`ZipoutPlan:${plan.title}`)}`
@@ -209,10 +204,9 @@ export default function PlanDetailClient({ initialPlan }: any) {
 
   // ─── Shared: copy link ─────────────────────────────────────────
   const copyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Copied", {
-      description: shareUrl.replace("https://", ""),
-    });
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied!");
   };
 
   // ─── Shared: download OG image ─────────────────────────────────
@@ -423,7 +417,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
       navigator.share({
         title: plan.title,
         text: `${spotsOpen} spot${spotsOpen === 1 ? "" : "s"} left`,
-        url: shareUrl,
+        url: window.location.href,
       });
     else copyLink();
   };
@@ -1292,9 +1286,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
                       padding: "8px 10px",
                     }}
                   >
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <img
                         src={
                           p.user?.avatar_url ||
@@ -1303,31 +1295,17 @@ export default function PlanDetailClient({ initialPlan }: any) {
                         className="pd-av"
                         alt={p.user?.name || "Member"}
                       />
-                      <span
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: "#1a1410",
-                        }}
-                      >
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#1a1410" }}>
                         {p.user?.name || "Member"}
                       </span>
                       {String(p.user_id) === String(plan.host_id) && (
-                        <span
-                          className="pd-joined-badge"
-                          style={{ marginTop: 0 }}
-                        >
+                        <span className="pd-joined-badge" style={{ marginTop: 0 }}>
                           Host
                         </span>
                       )}
                     </div>
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
-                      <Link
-                        href={`/profile/${p.user_id}`}
-                        className="pd-profile-btn"
-                      >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Link href={`/profile/${p.user_id}`} className="pd-profile-btn">
                         <ExternalLink size={10} /> View profile
                       </Link>
                       {isHost && String(p.user_id) !== String(plan.host_id) && (
@@ -1344,9 +1322,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
                           }}
                           disabled={busy === `remove-${p.user_id}`}
                         >
-                          {busy === `remove-${p.user_id}`
-                            ? "Removing…"
-                            : "Remove"}
+                          {busy === `remove-${p.user_id}` ? "Removing…" : "Remove"}
                         </button>
                       )}
                     </div>
@@ -1488,24 +1464,24 @@ export default function PlanDetailClient({ initialPlan }: any) {
           {(isHost || isParticipant) &&
             typeof plan.whatsapp_link === "string" &&
             plan.whatsapp_link.trim().length > 0 && (
-              <a
-                href={plan.whatsapp_link.trim()}
-                target="_blank"
-                rel="noreferrer"
-                className="pd-wa"
+            <a
+              href={plan.whatsapp_link.trim()}
+              target="_blank"
+              rel="noreferrer"
+              className="pd-wa"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                viewBox="0 0 16 16"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
-                </svg>
-                Open WhatsApp group
-              </a>
-            )}
+                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
+              </svg>
+              Open WhatsApp group
+            </a>
+          )}
 
           {/* ── Host controls ── */}
           {isHost && (
@@ -1892,8 +1868,10 @@ export default function PlanDetailClient({ initialPlan }: any) {
                   type="button"
                   className="pd-og-btn primary"
                   onClick={() => {
+                    const url =
+                      typeof window !== "undefined" ? window.location.href : "";
                     window.open(
-                      `https://wa.me/?text=${encodeURIComponent(`${plan.title} ${shareUrl}`)}`,
+                      `https://wa.me/?text=${encodeURIComponent(`Check out this plan: ${plan.title} ${url}`)}`,
                       "_blank",
                     );
                   }}
@@ -1915,8 +1893,10 @@ export default function PlanDetailClient({ initialPlan }: any) {
                   type="button"
                   className="pd-og-btn primary"
                   onClick={() => {
+                    const url =
+                      typeof window !== "undefined" ? window.location.href : "";
                     window.open(
-                      `https://www.instagram.com/?text=${encodeURIComponent(`${plan.title} ${shareUrl}`)}`,
+                      `https://www.instagram.com/?text=${encodeURIComponent(`Check out this plan: ${plan.title} ${url}`)}`,
                       "_blank",
                     );
                   }}
