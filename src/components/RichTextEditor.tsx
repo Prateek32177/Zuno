@@ -191,12 +191,11 @@ export function RichTextEditor({
           border-radius: 16px;
           overflow: hidden;
           border: 1.5px solid #e2d9ce;
-          background: #efe7da;
+          background: #fff;
           transition: border-color 0.15s;
         }
         .rte-wrap:focus-within {
-          border-color: #c2602a;
-          background: #faf5ee;
+          background: #fff;
         }
 
         /* Toolbar */
@@ -204,7 +203,7 @@ export function RichTextEditor({
           display: flex;
           align-items: center;
           gap: 2px;
-          padding: 8px 10px;
+          padding: 2px 10px;
           border-bottom: 1px solid #ddd3c5;
           background: #e8ddd0;
           flex-wrap: wrap;
