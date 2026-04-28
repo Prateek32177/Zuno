@@ -5,9 +5,7 @@ import { usePathname } from "next/navigation";
 
 const LINES = [
   "Find a plan for a sunrise hike",
-  "Join instantly, just go",
   "Chai + sunset plans",
-  "Hit a weekend club crawl",
   "Take that spontaneous trip",
 ];
 
@@ -55,7 +53,7 @@ export default function Preloader() {
       // mark immediately (critical)
       sessionStorage.setItem("zipout_preloader_seen", "true");
 
-      await wait(200);
+      await wait(120);
       if (cancelled) return;
 
       setVisible(true);
@@ -65,10 +63,10 @@ export default function Preloader() {
       while (i < LINES.length && !cancelled) {
         setIndex(i);
 
-        await wait(700);
+        await wait(500);
         setAnimateOut(true);
 
-        await wait(250);
+        await wait(180);
         setAnimateOut(false);
 
         i++;
@@ -78,7 +76,7 @@ export default function Preloader() {
 
       setPhase("final");
 
-      await wait(1000);
+      await wait(700);
 
       setVisible(false);
     };
@@ -96,7 +94,7 @@ export default function Preloader() {
 
     const timeout = setTimeout(() => {
       setVisible(false);
-    }, 5000);
+    }, 3500);
 
     return () => clearTimeout(timeout);
   }, [visible]);
@@ -117,12 +115,12 @@ export default function Preloader() {
       {/* Content */}
       <div className="relative flex h-full flex-col items-center justify-center text-white">
         {/* Logo */}
-        <div className="mb-5 text-3xl font-semibold tracking-tight opacity-90">
+        <div className="mb-3 text-3xl font-semibold tracking-tight opacity-90">
           Zipout
         </div>
 
         {/* Animated text */}
-        <div className="h-8 flex items-center justify-center overflow-hidden">
+        <div className="h-6 flex items-center justify-center overflow-hidden">
           {phase === "lines" ? (
             <div
               key={index}

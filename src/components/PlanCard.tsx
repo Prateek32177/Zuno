@@ -226,9 +226,13 @@ export function PlanCard({
           <h3 className="plan-title text-[15.5px] font-bold leading-snug text-[#1a1410] line-clamp-2 flex-1">
             {plan.title}
           </h3>
-          <div className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#6e6258]">
-            <p className="text-[12px] font-bold ">{formatDate(planDate)}</p>
-            <p className="text-[11px] ">{formatTime(planDate)}</p>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#6e6258]">
+              <p className="text-[12px] font-bold ">{formatDate(planDate)}</p>
+              <p className="text-[11px] ">{formatTime(planDate)}</p>
+            </div>
+            {/* Urgency tag */}
+            <UrgencyChip urgency={urgency} effectiveStatus={effectiveStatus} />
           </div>
 
           {/* Divider */}
@@ -242,11 +246,6 @@ export function PlanCard({
                 <div className="flex items-center gap-1.5">
                   <AvatarStack participants={joinedParticipants} />
                 </div>
-                {/* Urgency tag */}
-                <UrgencyChip
-                  urgency={urgency}
-                  effectiveStatus={effectiveStatus}
-                />
               </div>
             </div>
 
@@ -348,8 +347,7 @@ function ActionPill({
 }
 
 function AvatarStack({ participants }: { participants: any[] }) {
-  if (!participants.length)
-    return
+  if (!participants.length) return;
 
   const visible = participants.slice(0, 5);
   const extra = participants.length - visible.length;
