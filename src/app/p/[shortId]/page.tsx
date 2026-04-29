@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import PlanDetailClient from "./PlanDetailClient";
+import PlanDetailClient from "../../(main)/plans/[id]/PlanDetailClient";
 import { createClient } from "@/lib/supabase/server";
 import { parseDatetimeLocal, formatDateTime } from "@/lib/datetime";
 import { getParticipantCapacity } from "@/lib/plan";
 import { getJoinedParticipantsCount } from "@/lib/plan";
 
-const SITE_URL = "https://zunoplan.vercel.app";
+const SITE_URL = "https://www.zipout.in";
 
 // ─── METADATA ─────────────────────────
 function buildOgTitle(plan: {
