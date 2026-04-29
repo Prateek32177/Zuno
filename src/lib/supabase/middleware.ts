@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
-const publicPaths = ['/', '/auth/callback', '/feed', '/plans', '/terms', '/safety', '/report', '/banned', '/home', '/privacy']
+const publicPaths = ['/', '/auth/callback', '/feed', '/plans', '/terms', '/safety', '/report', '/banned', '/home', '/privacy', 'p']
 
 export const updateSession = async (request: NextRequest) => {
   let supabaseResponse = NextResponse.next({ request: { headers: request.headers } })
