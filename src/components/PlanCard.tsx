@@ -68,9 +68,11 @@ function getUrgencySignal(
 export function PlanCard({
   plan,
   onToggleFavorite,
+  isAuthed,
 }: {
   plan: Plan;
   onToggleFavorite?: () => void;
+  isAuthed?: boolean;
 }) {
   const [heartAnim, setHeartAnim] = useState(false);
 
