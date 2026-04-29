@@ -119,7 +119,7 @@ export function PlanCard({
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = `${window.location.origin}/${plan.short_id}`;
+    const url = `${window.location.origin}/p/${plan.short_id}`;
     if (navigator.share) navigator.share({ title: plan.title, url });
     else navigator.clipboard.writeText(url);
   };

@@ -185,8 +185,8 @@ export default function PlanDetailClient({ initialPlan }: any) {
   ]);
   const shareUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/${plan.short_id}`
-      : `https://zipout.in/${plan.short_id}`;
+      ? `${window.location.origin}/p/${plan.short_id}`
+      : `https://zipout.in/p/${plan.short_id}`;
   const upiLink =
     plan.host?.gpay_link && perPersonShare
       ? `upi://pay?pa=${encodeURIComponent(plan.host.gpay_link)}&pn=${encodeURIComponent(plan.host?.upi_payee_name || plan.host?.name || "Host")}&am=${encodeURIComponent(perPersonShare.toFixed(2))}&cu=INR&tn=${encodeURIComponent(`ZipoutPlan:${plan.title}`)}`

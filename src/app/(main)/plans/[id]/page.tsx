@@ -9,7 +9,7 @@ import { parseDatetimeLocal, formatDateTime } from "@/lib/datetime";
 import { getParticipantCapacity } from "@/lib/plan";
 import { getJoinedParticipantsCount } from "@/lib/plan";
 
-const SITE_URL = "https://www.zipout.in";
+const SITE_URL = "https://zipout.in";
 
 // ─── Helpers ────────────────────────────────────────────────────
 
@@ -44,7 +44,7 @@ export async function generateMetadata({
     .from("plans")
     .select(
       `
-      id, title, category, datetime, city, location_name, max_people, image_url,
+      id, title, category, datetime, city, location_name, max_people, image_url, short_id,
       host:users!plans_host_id_fkey(name),
       participants:plan_participants(status)
     `,
@@ -70,9 +70,11 @@ export async function generateMetadata({
 
   // Use a fully-absolute URL — metadataBase below also ensures this
   // but being explicit avoids any edge-case crawler issues.
-  const ogImage = plan?.image_url || `${SITE_URL}/api/og-standard?title=${encodeURIComponent(plan.title)}&city=${encodeURIComponent(plan.city || "")}&date=${encodeURIComponent(formatDateTime(planDate))}&spots=${spotsOpen}`;
+  const ogImage =
+    plan?.image_url ||
+    `${SITE_URL}/api/og-standard?title=${encodeURIComponent(plan.title)}&city=${encodeURIComponent(plan.city || "")}&date=${encodeURIComponent(formatDateTime(planDate))}&spots=${spotsOpen}`;
 
-  const planUrl = `${SITE_URL}/plans/${plan.id}`;
+  const planUrl = `${SITE_URL}/p/${plan.short_id}`;
 
   return {
     metadataBase: new URL(SITE_URL),

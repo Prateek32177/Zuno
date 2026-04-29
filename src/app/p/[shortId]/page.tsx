@@ -7,7 +7,7 @@ import { parseDatetimeLocal, formatDateTime } from "@/lib/datetime";
 import { getParticipantCapacity } from "@/lib/plan";
 import { getJoinedParticipantsCount } from "@/lib/plan";
 
-const SITE_URL = "https://www.zipout.in";
+const SITE_URL = "https://zipout.in";
 
 // ─── METADATA ─────────────────────────
 function buildOgTitle(plan: {
