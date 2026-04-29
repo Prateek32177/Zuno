@@ -29,6 +29,8 @@ import { useCity } from "@/components/CityContext";
 import { RichTextEditor, RichTextDisplay } from "@/components/RichTextEditor";
 import { createClient } from "@/lib/supabase/client";
 import type { PlanCategory } from "@/lib/categories";
+import { getReadableError } from "@/utils/createplans";
+
 
 const DEFAULT_BANNER_URL =
   "https://i.pinimg.com/736x/0d/e0/41/0de041a6672a9b2eaa49f19f4d3bf03b.jpg";
@@ -86,8 +88,29 @@ function isDescriptionEmpty(html: string) {
   return html.replace(/<[^>]*>/g, "").trim().length === 0;
 }
 
+// ─── Types ──────────────────────────────────────────────────────────────────
 type PopupType = "people" | "visibility" | "cost" | "city" | null;
 
+interface FormData {
+  title: string;
+  description: string;
+  category: string;
+  city: string;
+  location_name: string;
+  google_maps_link: string;
+  datetime: string;
+  max_people: number | null;
+  whatsapp_link: string;
+  requireApproval: boolean;
+  female_only: boolean;
+  visibility: string;
+  image_url: string;
+  cost_mode: string;
+  cost_amount: string;
+  host_included_in_spots_and_splits: boolean;
+}
+
+// ─── Component ──────────────────────────────────────────────────────────────
 export default function CreatePlanPage() {
   const router = useRouter();
   const { selectedCity, setSelectedCity } = useCity();
@@ -101,25 +124,27 @@ export default function CreatePlanPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [activePopup, setActivePopup] = useState<PopupType>(null);
 
-  const [formData, setFormData] = useState({
+  // ✅ All smart defaults — user only needs title, location, datetime
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
-    category: "" as PlanCategory | "",
+    category: "other" as PlanCategory, // ✅ default so never empty
     city: DEFAULT_LAUNCH_CITY,
     location_name: "",
     google_maps_link: "",
     datetime: "",
-    max_people: "",
+    max_people: null, // ✅ null = unlimited (not "")
     whatsapp_link: "",
     requireApproval: false,
     female_only: false,
     visibility: "public",
     image_url: DEFAULT_BANNER_URL,
-    cost_mode: "per_person" as "per_person" | "total",
-    cost_amount: "",
+    cost_mode: "per_person",
+    cost_amount: "", // empty = free
     host_included_in_spots_and_splits: true,
   });
 
+  // Sync city from context
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -127,23 +152,34 @@ export default function CreatePlanPage() {
     }));
   }, [selectedCity]);
 
+  // Load current user gender (for women-only validation)
   useEffect(() => {
     const loadCurrentUser = async () => {
-      const supabase = createClient();
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) return;
-      const { data: me } = await supabase
-        .from("users")
-        .select("gender")
-        .eq("id", auth.user.id)
-        .maybeSingle();
-      setCurrentUserGender(String(me?.gender || "").toLowerCase());
+      try {
+        const supabase = createClient();
+        const { data: auth } = await supabase.auth.getUser();
+        if (!auth.user) return;
+        const { data: me } = await supabase
+          .from("users")
+          .select("gender")
+          .eq("id", auth.user.id)
+          .maybeSingle();
+        setCurrentUserGender(String(me?.gender || "").toLowerCase());
+      } catch {
+        // non-critical, silently ignore
+      }
     };
     loadCurrentUser();
   }, []);
 
-  const handleChange = (e: any) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
+    const target = e.target as HTMLInputElement;
+    const { name, value, type } = target;
+    const checked = type === "checkbox" ? target.checked : undefined;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -152,11 +188,18 @@ export default function CreatePlanPage() {
   };
 
   const handleBannerUpload = async (file: File) => {
+    // Client-side size check before uploading
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image too large", {
+        description: "Please use an image under 5MB.",
+      });
+      return;
+    }
     try {
       setBannerUploading(true);
       const supabase = createClient();
       const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) throw new Error("Not authenticated");
+      if (!auth.user) throw new Error("Not logged in");
       const ext = file.name.split(".").pop();
       const path = `plans/${auth.user.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
@@ -168,43 +211,75 @@ export default function CreatePlanPage() {
         .getPublicUrl(path);
       setFormData((prev) => ({ ...prev, image_url: urlData.publicUrl }));
       toast.success("Banner uploaded");
-    } catch (err: any) {
-      toast.error("Upload failed", { description: err.message });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast.error("Upload failed", { description: getReadableError(message) });
     } finally {
       setBannerUploading(false);
     }
   };
 
+  // ✅ Only 3 required fields — everything else has safe defaults
   const canPublish =
-    formData.title.trim() && formData.location_name.trim() && formData.datetime;
+    formData.title.trim().length > 0 &&
+    formData.location_name.trim().length > 0 &&
+    formData.datetime.length > 0;
 
   const handlePublish = async () => {
-    if (!canPublish) return;
+    if (!canPublish || loading) return;
+
+    // Client-side validation before hitting API
+    if (new Date(formData.datetime).getTime() < Date.now()) {
+      toast.error("Choose a future date", {
+        description: "The event time must be in the future.",
+      });
+      return;
+    }
+    if (formData.female_only && currentUserGender !== "female") {
+      toast.error("Women-only plans", {
+        description: "Only women can host women-only plans.",
+      });
+      return;
+    }
+
     try {
-      if (new Date(formData.datetime).getTime() < Date.now()) {
-        toast.error("Please choose a future date and time");
-        return;
-      }
-      if (formData.female_only && currentUserGender !== "female") {
-        toast.error("Women-only plans can only be hosted by women");
-        return;
-      }
       setLoading(true);
+      const payload = {
+        ...formData,
+        // ✅ Clean up types for API
+        max_people: formData.max_people ?? null,
+        cost_amount: formData.cost_amount ? Number(formData.cost_amount) : null,
+        image_url: formData.image_url || DEFAULT_BANNER_URL,
+      };
+
       const res = await fetch("/api/plans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          image_url: formData.image_url || DEFAULT_BANNER_URL,
-        }),
+        body: JSON.stringify(payload),
       });
+
       if (res.ok) {
         const data = await res.json();
+        toast.success("Plan published! 🎉");
         router.push(`/plans/${data.id}`);
       } else {
-        const err = await res.json();
-        toast.error("Failed to create plan", { description: err.error });
+        let errMessage = "Unknown error";
+        try {
+          const err = await res.json();
+          errMessage = err?.error || err?.message || JSON.stringify(err);
+        } catch {
+          errMessage = `Server error ${res.status}`;
+        }
+        toast.error("Couldn't publish plan", {
+          description: getReadableError(errMessage),
+        });
       }
+    } catch (err: unknown) {
+      // Network / fetch errors
+      const message = err instanceof Error ? err.message : "Network error";
+      toast.error("Connection error", {
+        description: getReadableError(message),
+      });
     } finally {
       setLoading(false);
     }
@@ -212,9 +287,9 @@ export default function CreatePlanPage() {
 
   const datePresets = getDatePresets();
 
-  const peoplePillLabel = formData.max_people
-    ? `${formData.max_people} people`
-    : "Unlimited";
+  // ✅ Pill labels using null check (not empty string check)
+  const peoplePillLabel =
+    formData.max_people === null ? "No limit" : `Up to ${formData.max_people}`;
 
   const visPillLabel =
     formData.visibility === "invite_only"
@@ -227,8 +302,7 @@ export default function CreatePlanPage() {
     ? `₹${formData.cost_amount}${formData.cost_mode === "per_person" ? "/pp" : " total"}`
     : "Free";
 
-  // Bottom nav height + sticky CTA height padding
-  const BOTTOM_OFFSET = 56; // BottomNav height
+  const BOTTOM_OFFSET = 56;
   const STICKY_BAR_HEIGHT = 68;
 
   return (
@@ -240,15 +314,12 @@ export default function CreatePlanPage() {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Satoshi:wght@400;500;600;700&display=swap');
-        /* Fallback to Google Fonts alternatives */
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,wght@0,500;0,700;1,500&display=swap');
 
         * { box-sizing: border-box; }
         .cp-root { font-family: 'Plus Jakarta Sans', sans-serif; }
         .cp-heading { font-family: 'Fraunces', Georgia, serif; }
 
-        /* ── FIELD ── */
         .field {
           width: 100%;
           border-radius: 10px;
@@ -268,7 +339,6 @@ export default function CreatePlanPage() {
         }
         .field::placeholder { color: #C4B8AC; }
 
-        /* ── LABEL ── */
         .lbl {
           display: block;
           font-size: 10px;
@@ -279,7 +349,6 @@ export default function CreatePlanPage() {
           margin-bottom: 5px;
         }
 
-        /* ── CHIP (category / date presets) ── */
         .chip {
           display: inline-flex; align-items: center; gap: 4px;
           padding: 5px 11px; border-radius: 20px;
@@ -290,14 +359,12 @@ export default function CreatePlanPage() {
           font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .chip.on {
-          background: #FF6B35;
-          color: #fff;
+          background: #FF6B35; color: #fff;
           border-color: #FF6B35;
           box-shadow: 0 2px 8px rgba(255,107,53,0.35);
         }
         .chip:hover:not(.on) { border-color: #FF6B35; color: #FF6B35; }
 
-        /* ── DEFAULT PILL (smart defaults) ── */
         .default-pill {
           display: inline-flex; align-items: center; gap: 5px;
           padding: 6px 11px; border-radius: 20px;
@@ -316,7 +383,6 @@ export default function CreatePlanPage() {
         }
         .default-pill.active-pill svg { opacity: 1; }
 
-        /* ── SEG (segment controls in popups) ── */
         .seg {
           border-radius: 8px; padding: 8px 0;
           font-size: 12px; font-weight: 700;
@@ -333,7 +399,6 @@ export default function CreatePlanPage() {
         }
         .seg:hover:not(.on) { border-color: #FF6B35; color: #FF6B35; }
 
-        /* ── BANNER ── */
         .banner-shell {
           position: relative; height: 130px; border-radius: 12px;
           overflow: hidden; background: #F0EBE4;
@@ -360,7 +425,6 @@ export default function CreatePlanPage() {
           font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* ── TOGGLE ── */
         .toggle-track {
           width: 34px; height: 19px; border-radius: 10px;
           background: #DDD5CC; transition: background 0.2s;
@@ -375,7 +439,6 @@ export default function CreatePlanPage() {
         }
         .toggle-track.on .toggle-thumb { transform: translateX(15px); }
 
-        /* ── INFO ROW ── */
         .info-row {
           border-radius: 10px; background: #fff;
           border: 1.5px solid #EDE8E1;
@@ -383,12 +446,10 @@ export default function CreatePlanPage() {
           align-items: center; justify-content: space-between; gap: 10px;
         }
 
-        /* ── ACCORDION ── */
         .accd-header {
           display: flex; align-items: center; justify-content: space-between;
           padding: 10px 12px; cursor: pointer; border-radius: 10px;
-          background: #fff;
-          border: 1.5px solid #EDE8E1;
+          background: #fff; border: 1.5px solid #EDE8E1;
           transition: all 0.15s; user-select: none;
         }
         .accd-header:hover { border-color: #FF6B35; }
@@ -406,14 +467,12 @@ export default function CreatePlanPage() {
         .accd-arrow { transition: transform 0.2s; color: #C4B5A5; flex-shrink: 0; }
         .accd-arrow.open { transform: rotate(180deg); color: #FF6B35; }
 
-        /* ── SCROLLBAR HIDE ── */
         .noscroll::-webkit-scrollbar { display: none; }
         .noscroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* ── STICKY BOTTOM CTA BAR ── */
         .sticky-cta {
           position: fixed;
-          bottom: 56px; /* BottomNav height */
+          bottom: 56px;
           left: 0; right: 0;
           z-index: 50;
           display: flex; align-items: center; gap: 8px;
@@ -425,12 +484,10 @@ export default function CreatePlanPage() {
           max-width: 480px;
           margin: 0 auto;
         }
-        /* Center sticky bar properly */
         @media (min-width: 480px) {
           .sticky-cta { left: 50%; right: auto; transform: translateX(-50%); width: 480px; }
         }
 
-        /* ── CTA BUTTON ── */
         .cta-btn {
           flex: 1; border-radius: 10px;
           padding: 8px 0; font-size: 13px; font-weight: 700;
@@ -455,10 +512,8 @@ export default function CreatePlanPage() {
         }
         .cta-btn.publish:hover:not(:disabled) { box-shadow: 0 6px 18px rgba(255,107,53,0.5); }
 
-        /* ── RMETA (preview card meta row) ── */
         .rmeta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7A6455; }
 
-        /* ── SHEET OVERLAY ── */
         .sheet-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,0.4);
           z-index: 60; display: flex; align-items: flex-end; justify-content: center;
@@ -477,7 +532,6 @@ export default function CreatePlanPage() {
 
         .num-preset-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 
-        /* ── CITY PILL in header ── */
         .city-pill {
           display: inline-flex; align-items: center; gap: 4px;
           padding: 4px 10px; border-radius: 20px;
@@ -492,10 +546,6 @@ export default function CreatePlanPage() {
         .city-pill:hover { background: linear-gradient(135deg, #FFE4D4, #FFD0B8); }
         .city-pill svg { width: 10px; height: 10px; }
 
-        /* ── SECTION DIVIDER LABEL ── */
-        .section-gap { margin-top: 14px; }
-
-        /* ── CITY SHEET grid ── */
         .city-grid {
           display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
         }
@@ -513,10 +563,8 @@ export default function CreatePlanPage() {
         }
         .city-option:hover:not(.on) { border-color: #FF6B35; color: #FF6B35; }
 
-        /* ── Hint text ── */
         .hint { font-size: 11px; color: #B5A598; line-height: 1.45; }
 
-        /* Info box in popups */
         .info-box {
           border-radius: 9px; background: #FFF5F1;
           border: 1px solid #FFD5C4;
@@ -524,6 +572,12 @@ export default function CreatePlanPage() {
           color: #7A4A32; line-height: 1.5; margin-bottom: 12px;
         }
         .info-box strong { color: #C84B1F; }
+
+        /* Required field asterisk */
+        .req { color: #FF6B35; margin-left: 2px; }
+
+        /* Field error highlight */
+        .field-error { border-color: #FF6B35 !important; background: #FFF5F1 !important; }
       `}</style>
 
       {/* ── HEADER ── */}
@@ -550,6 +604,7 @@ export default function CreatePlanPage() {
                 alignItems: "center",
                 justifyContent: "center",
                 transition: "transform 0.1s",
+                cursor: "pointer",
               }}
               className="active:scale-95"
             >
@@ -565,7 +620,6 @@ export default function CreatePlanPage() {
               Create Plan
             </p>
 
-            {/* City pill — top right */}
             <button
               type="button"
               className="city-pill"
@@ -584,7 +638,7 @@ export default function CreatePlanPage() {
         className="mx-auto max-w-md px-4 pt-4 pb-2 cp-root"
         style={{ display: "flex", flexDirection: "column", gap: 12 }}
       >
-        {/* Banner */}
+        {/* Banner — optional */}
         <div>
           <span className="lbl">
             Banner{" "}
@@ -669,9 +723,11 @@ export default function CreatePlanPage() {
           />
         </div>
 
-        {/* Title */}
+        {/* Title — required */}
         <div>
-          <span className="lbl">Title</span>
+          <span className="lbl">
+            Title<span className="req">*</span>
+          </span>
           <input
             name="title"
             value={formData.title}
@@ -683,9 +739,11 @@ export default function CreatePlanPage() {
           />
         </div>
 
-        {/* Location */}
+        {/* Location — required */}
         <div>
-          <span className="lbl">Location</span>
+          <span className="lbl">
+            Location<span className="req">*</span>
+          </span>
           <input
             name="location_name"
             value={formData.location_name}
@@ -695,7 +753,7 @@ export default function CreatePlanPage() {
           />
         </div>
 
-        {/* Google Maps link */}
+        {/* Google Maps link — optional */}
         <div>
           <span className="lbl">
             Meetup location link{" "}
@@ -718,9 +776,11 @@ export default function CreatePlanPage() {
           />
         </div>
 
-        {/* When */}
+        {/* When — required */}
         <div>
-          <span className="lbl">When</span>
+          <span className="lbl">
+            When<span className="req">*</span>
+          </span>
           <div
             className="flex gap-2 overflow-x-auto pb-1 noscroll"
             style={{ marginBottom: 7 }}
@@ -751,7 +811,7 @@ export default function CreatePlanPage() {
           />
         </div>
 
-        {/* Smart defaults row */}
+        {/* Smart defaults row — all optional, tap to change */}
         <div>
           <span className="lbl">
             Details{" "}
@@ -766,13 +826,16 @@ export default function CreatePlanPage() {
             </span>
           </span>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+            {/* People */}
             <button
-              className={`default-pill ${formData.max_people ? "active-pill" : ""}`}
+              className={`default-pill ${formData.max_people == null ? "active-pill" : ""}`}
               onClick={() => setActivePopup("people")}
             >
               <Users style={{ width: 12, height: 12 }} />
               {peoplePillLabel}
             </button>
+
+            {/* Visibility */}
             <button
               className={`default-pill ${formData.visibility !== "public" || formData.requireApproval ? "active-pill" : ""}`}
               onClick={() => setActivePopup("visibility")}
@@ -780,6 +843,8 @@ export default function CreatePlanPage() {
               <Globe style={{ width: 12, height: 12 }} />
               {visPillLabel}
             </button>
+
+            {/* Cost */}
             <button
               className={`default-pill ${formData.cost_amount ? "active-pill" : ""}`}
               onClick={() => setActivePopup("cost")}
@@ -790,10 +855,21 @@ export default function CreatePlanPage() {
           </div>
         </div>
 
-        {/* Category / Vibe */}
+        {/* Category / Vibe — optional (default: "other") */}
         <div>
-          <span className="lbl">What's your Vibe?</span>
-          <div className=" pb-1 gap-1 flex flex-wrap">
+          <span className="lbl">
+            What's the plan?{" "}
+            <span
+              style={{
+                textTransform: "none",
+                fontWeight: 400,
+                color: "#C4B5A5",
+              }}
+            >
+              optional
+            </span>
+          </span>
+          <div className="pb-1 gap-1 flex flex-wrap">
             {getCityCategories(formData.city).map((cat) => (
               <button
                 key={cat.category}
@@ -801,7 +877,9 @@ export default function CreatePlanPage() {
                 onClick={() =>
                   setFormData((p) => ({
                     ...p,
-                    category: p.category === cat.category ? "" : cat.category,
+                    // Toggle off → revert to "other"; never leave empty
+                    category:
+                      p.category === cat.category ? "other" : cat.category,
                   }))
                 }
                 className={`chip flex-shrink-0 ${formData.category === cat.category ? "on" : ""}`}
@@ -816,7 +894,7 @@ export default function CreatePlanPage() {
           </div>
         </div>
 
-        {/* Description accordion */}
+        {/* Description accordion — optional */}
         <div>
           <div
             className={`accd-header ${descOpen ? "open" : ""}`}
@@ -952,9 +1030,7 @@ export default function CreatePlanPage() {
         </div>
       </div>
 
-      {/* ══════════════════════════════
-          STICKY CTA BAR
-      ══════════════════════════════ */}
+      {/* ══ STICKY CTA BAR ══ */}
       <div className="sticky-cta">
         <button
           type="button"
@@ -982,9 +1058,7 @@ export default function CreatePlanPage() {
         </button>
       </div>
 
-      {/* ══════════════════════════════
-          POPUP — City
-      ══════════════════════════════ */}
+      {/* ══ POPUP — City ══ */}
       {activePopup === "city" && (
         <div className="sheet-overlay" onClick={() => setActivePopup(null)}>
           <div
@@ -1042,9 +1116,7 @@ export default function CreatePlanPage() {
         </div>
       )}
 
-      {/* ══════════════════════════════
-          POPUP — Max people
-      ══════════════════════════════ */}
+      {/* ══ POPUP — Max people ══ */}
       {activePopup === "people" && (
         <div className="sheet-overlay" onClick={() => setActivePopup(null)}>
           <div
@@ -1084,19 +1156,18 @@ export default function CreatePlanPage() {
               </button>
             </div>
             <div className="num-preset-row">
+              {/* ✅ null = unlimited */}
               <button
-                className={`chip ${formData.max_people === "" ? "on" : ""}`}
-                onClick={() => setFormData((p) => ({ ...p, max_people: "" }))}
+                className={`chip ${formData.max_people === null ? "on" : ""}`}
+                onClick={() => setFormData((p) => ({ ...p, max_people: null }))}
               >
-                Unlimited
+                No limit
               </button>
               {MAX_PEOPLE_PRESETS.map((n) => (
                 <button
                   key={n}
-                  className={`chip ${formData.max_people === String(n) ? "on" : ""}`}
-                  onClick={() =>
-                    setFormData((p) => ({ ...p, max_people: String(n) }))
-                  }
+                  className={`chip ${formData.max_people === n ? "on" : ""}`}
+                  onClick={() => setFormData((p) => ({ ...p, max_people: n }))}
                 >
                   {n}
                 </button>
@@ -1107,22 +1178,25 @@ export default function CreatePlanPage() {
               min={1}
               step={1}
               inputMode="numeric"
-              value={formData.max_people}
+              value={formData.max_people ?? ""} // ✅ null → "" for input display
               onChange={(e) => {
                 const v = e.target.value;
-                if (v === "" || Number(v) >= 1)
-                  setFormData((p) => ({ ...p, max_people: v }));
+                setFormData((p) => ({
+                  ...p,
+                  max_people: v === "" ? null : Math.max(1, Number(v)), // ✅ number or null
+                }));
               }}
               onKeyDown={(e) => {
                 if (e.key === "-" || e.key === "e") e.preventDefault();
               }}
               placeholder="Custom number"
               className="field"
+              style={{ marginBottom: 12 }}
             />
             <button
               type="button"
               className="cta-btn publish"
-              style={{ marginTop: 12, width: "100%", flex: "none" }}
+              style={{ width: "100%", flex: "none" }}
               onClick={() => setActivePopup(null)}
             >
               Done
@@ -1131,9 +1205,7 @@ export default function CreatePlanPage() {
         </div>
       )}
 
-      {/* ══════════════════════════════
-          POPUP — Visibility & joining
-      ══════════════════════════════ */}
+      {/* ══ POPUP — Visibility & joining ══ */}
       {activePopup === "visibility" && (
         <div className="sheet-overlay" onClick={() => setActivePopup(null)}>
           <div
@@ -1262,9 +1334,7 @@ export default function CreatePlanPage() {
         </div>
       )}
 
-      {/* ══════════════════════════════
-          POPUP — Cost
-      ══════════════════════════════ */}
+      {/* ══ POPUP — Cost ══ */}
       {activePopup === "cost" && (
         <div className="sheet-overlay" onClick={() => setActivePopup(null)}>
           <div
@@ -1334,7 +1404,12 @@ export default function CreatePlanPage() {
               {COST_PRESETS.map((n) => (
                 <button
                   key={n}
-                  className={`chip ${(n === 0 && formData.cost_amount === "") || formData.cost_amount === String(n) ? "on" : ""}`}
+                  className={`chip ${
+                    (n === 0 && formData.cost_amount === "") ||
+                    formData.cost_amount === String(n)
+                      ? "on"
+                      : ""
+                  }`}
                   onClick={() =>
                     setFormData((p) => ({
                       ...p,
@@ -1361,8 +1436,9 @@ export default function CreatePlanPage() {
               }}
               placeholder="Custom amount (₹)"
               className="field"
+              style={{ marginBottom: 10 }}
             />
-            <div className="info-box" style={{ marginTop: 10 }}>
+            <div className="info-box">
               Shown as an estimate. After the plan ends you can confirm the
               final amount — participants get a UPI payment option.
             </div>
@@ -1378,9 +1454,7 @@ export default function CreatePlanPage() {
         </div>
       )}
 
-      {/* ══════════════════════════════
-          PREVIEW SHEET
-      ══════════════════════════════ */}
+      {/* ══ PREVIEW SHEET ══ */}
       {showPreview && (
         <div className="sheet-overlay" onClick={() => setShowPreview(false)}>
           <div
@@ -1557,10 +1631,11 @@ export default function CreatePlanPage() {
                         flexShrink: 0,
                       }}
                     />
+                    {/* ✅ null check */}
                     <span>
-                      {formData.max_people
-                        ? `Up to ${formData.max_people} people`
-                        : "Unlimited spots"}
+                      {formData.max_people === null
+                        ? "No limit on spots"
+                        : `Up to ${formData.max_people} people`}
                     </span>
                   </div>
                   {formData.cost_amount && (
@@ -1619,8 +1694,7 @@ export default function CreatePlanPage() {
                   "Publishing..."
                 ) : (
                   <>
-                    <Check style={{ width: 14, height: 14 }} />
-                    Publish plan
+                    <Check style={{ width: 14, height: 14 }} /> Publish plan
                   </>
                 )}
               </button>

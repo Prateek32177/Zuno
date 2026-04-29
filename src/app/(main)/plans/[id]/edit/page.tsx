@@ -23,7 +23,8 @@ import { INDIA_HIGH_POTENTIAL_CITIES } from "@/lib/cities";
 import { useCity } from "@/components/CityContext";
 import { createClient } from "@/lib/supabase/client";
 
-const DEFAULT_BANNER_URL = "https://i.pinimg.com/736x/0d/e0/41/0de041a6672a9b2eaa49f19f4d3bf03b.jpg";
+const DEFAULT_BANNER_URL =
+  "https://i.pinimg.com/736x/0d/e0/41/0de041a6672a9b2eaa49f19f4d3bf03b.jpg";
 const MAX_PEOPLE_PRESETS = [2, 4, 6, 10, 15, 20, 50];
 const COST_PRESETS = [0, 100, 200, 500, 1000, 2000];
 
@@ -44,25 +45,32 @@ export default function EditPlanPage() {
   });
   const { selectedCity, setSelectedCity } = useCity();
 
+  // ---------------- LOAD ----------------
   useEffect(() => {
     const load = async () => {
       if (!id) return;
+
       const res = await fetch(`/api/plans/${id}`);
       const data = await res.json();
+
       if (!res.ok) {
         toast.error("Unable to load plan");
         router.replace("/my-plans");
         return;
       }
+
       setForm({
         ...data,
         requireApproval: !!data.approval_mode,
         cost_mode: data.cost_mode || "per_person",
         cost_amount: data.cost_amount || "",
         image_url: data.image_url || DEFAULT_BANNER_URL,
+        max_people: data.max_people ?? null,
       });
+
       setLoading(false);
     };
+
     load();
   }, [id, router]);
 
@@ -100,26 +108,46 @@ export default function EditPlanPage() {
     }
   };
 
+  // ---------------- SAVE ----------------
   const save = async () => {
+    const maxPeople =
+      form.max_people === null || form.max_people === undefined
+        ? null
+        : Number(form.max_people);
+
+    if (maxPeople !== null && (isNaN(maxPeople) || maxPeople < 1)) {
+      return toast.error("Invalid people limit");
+    }
+
     setSaving(true);
+
     const payload = {
       ...form,
       image_url: form.image_url || DEFAULT_BANNER_URL,
       visibility:
         form.visibility === "private" ? "invite_only" : form.visibility,
+      max_people: maxPeople,
     };
+
     const res = await fetch(`/api/plans/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
     const data = await res.json().catch(() => ({}));
     setSaving(false);
-    if (!res.ok)
+
+    if (!res.ok) {
       return toast.error("Failed to save plan", {
         description: data.error || "Please try again.",
       });
-    if (form.city !== selectedCity) setSelectedCity(form.city);
+    }
+
+    if (form.city !== selectedCity) {
+      setSelectedCity(form.city);
+    }
+
     toast.success("Plan saved");
     router.push(`/plans/${id}`);
   };
@@ -127,7 +155,10 @@ export default function EditPlanPage() {
   if (loading)
     return (
       <div className="min-h-screen bg-[#F7F3EF] flex items-center justify-center">
-        <div className="text-[#A8917E] text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <div
+          className="text-[#A8917E] text-sm"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
           Loading plan...
         </div>
       </div>
@@ -278,7 +309,6 @@ export default function EditPlanPage() {
       </div>
 
       <div className="mx-auto max-w-md px-4 py-5 pb-28 space-y-6 ep-root">
-
         {/* BANNER */}
         <div>
           <span className="lbl">Banner</span>
@@ -427,37 +457,41 @@ export default function EditPlanPage() {
           />
         </div>
 
-        {/* MAX PEOPLE */}
         <div>
           <span className="lbl">Max people</span>
-          <div className="flex gap-2 flex-wrap mb-2.5">
+          <div className="flex gap-2 flex-wrap mb-2">
+            <button
+              onClick={() => update("max_people", null)}
+              className={`chip ${form.max_people === null ? "on" : ""}`}
+            >
+              Unlimited
+            </button>
+
             {MAX_PEOPLE_PRESETS.map((n) => (
               <button
                 key={n}
                 type="button"
                 onClick={() => update("max_people", n)}
-                className={`chip ${String(form.max_people) === String(n) ? "on" : ""}`}
+                className={`chip ${form.max_people === n ? "on" : ""}`}
               >
                 {n}
               </button>
             ))}
           </div>
+
           <input
             type="number"
             min={1}
-            step="1"
-            inputMode="numeric"
             value={form.max_people ?? ""}
             onChange={(e) => {
               const v = e.target.value;
-              if (v === "") update("max_people", "");
-              else if (Number(v) >= 1) update("max_people", Number(v));
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "-" || e.key === "e") e.preventDefault();
+              const num = Number(v);
+
+              if (v === "") update("max_people", null);
+              else if (!isNaN(num) && num >= 1) update("max_people", num);
             }}
             className="field"
-            placeholder="Custom number"
+            placeholder="Custom"
           />
         </div>
 
@@ -505,7 +539,7 @@ export default function EditPlanPage() {
                 className={`seg ${!form.requireApproval ? "on" : ""}`}
               >
                 <Zap className="h-3.5 w-3.5" />
-                Open to all
+                Unlimited
               </button>
             </div>
           </div>
@@ -573,7 +607,7 @@ export default function EditPlanPage() {
               onClick={() =>
                 update(
                   "host_included_in_spots_and_splits",
-                  !form.host_included_in_spots_and_splits
+                  !form.host_included_in_spots_and_splits,
                 )
               }
             >
@@ -610,11 +644,7 @@ export default function EditPlanPage() {
         </div>
 
         {/* SAVE */}
-        <button
-          onClick={save}
-          disabled={saving}
-          className="save-btn"
-        >
+        <button onClick={save} disabled={saving} className="save-btn">
           <Save className="h-4 w-4" />
           {saving ? "Saving..." : "Save changes"}
         </button>
@@ -669,9 +699,7 @@ export default function EditPlanPage() {
                 </p>
               </div>
               <div className="space-y-1.5">
-                <p className="font-bold text-[#2A1F1A] text-[12px]">
-                  WhatsApp
-                </p>
+                <p className="font-bold text-[#2A1F1A] text-[12px]">WhatsApp</p>
                 <p>Only joined participants can see the group link.</p>
               </div>
             </div>

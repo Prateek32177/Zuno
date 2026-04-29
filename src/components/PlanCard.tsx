@@ -35,33 +35,33 @@ function hashCode(value: string) {
   return h;
 }
 
-// Deterministic seed from participant id so avatars don't re-randomise on re-render
 function seedFromId(id: string) {
   let h = Math.abs(hashCode(id));
   return h.toString(36).padStart(12, "0").slice(0, 12);
 }
 
-function timeAgo(date: Date): string {
-  const diff = Date.now() - date.getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 2) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
-
+// 🔥 FIXED: supports unlimited
 function getUrgencySignal(
-  spotsLeft: number,
+  isUnlimited: boolean,
+  spotsLeft: number | null,
   joinedCount: number,
-): {
-  text: string;
-  type: "fire" | "warn" | "new" | null;
-} {
+) {
+  if (isUnlimited) {
+    if (joinedCount === 0)
+      return { text: "Be first to join", type: "new" as const };
+    return {
+      text: `${joinedCount} going`,
+      type: "new" as const,
+    };
+  }
+
   if (spotsLeft === 0) return { text: "Full", type: null };
-  if (spotsLeft === 1) return { text: "Last spot!", type: "fire" };
-  if (spotsLeft <= 3) return { text: `${spotsLeft} spots left`, type: "warn" };
-  if (joinedCount === 0) return { text: "Be first to join", type: "new" };
+  if (spotsLeft === 1) return { text: "Last spot!", type: "fire" as const };
+  if (spotsLeft! <= 3)
+    return { text: `${spotsLeft} spots left`, type: "warn" as const };
+  if (joinedCount === 0)
+    return { text: "Be first to join", type: "new" as const };
+
   return { text: `${spotsLeft} spots open`, type: null };
 }
 
@@ -71,7 +71,6 @@ export function PlanCard({
 }: {
   plan: Plan;
   onToggleFavorite?: () => void;
-  isAuthed?: boolean;
 }) {
   const [heartAnim, setHeartAnim] = useState(false);
 
@@ -80,37 +79,31 @@ export function PlanCard({
   const planDate = plan.datetime
     ? parseDatetimeLocal(plan.datetime)
     : new Date();
+
   const joinedParticipants = (plan.participants || []).filter(
     (p: any) => p.status === "joined",
   );
+
   const joinedCount = getJoinedParticipantsCount(plan.participants);
-  const participantCapacity = getParticipantCapacity(plan);
-  const spotsLeft = Math.max(participantCapacity - joinedCount, 0);
+
+  // 🔥 NEW: unlimited handling
+  const isUnlimited = plan.max_people === null;
+
+  const participantCapacity = isUnlimited ? null : getParticipantCapacity(plan);
+
+  const spotsLeft = isUnlimited
+    ? null
+    : Math.max(participantCapacity! - joinedCount, 0);
+
   const effectiveStatus = computeEffectivePlanStatus(plan as any);
   const badge = statusBadge(effectiveStatus);
   const visibility = normalizeVisibility(plan.visibility);
+
   const isHost = plan.current_user_id && plan.host_id === plan.current_user_id;
   const userHasJoined = !!plan.is_joined;
 
-  const hostIncluded = isHostIncludedInSpots(plan);
-  const genderAggregate = joinedParticipants.reduce(
-    (acc: any, p: any) => {
-      const g = String(p.user?.gender || "").toLowerCase();
-      if (g === "male") acc.male += 1;
-      else if (g === "female") acc.female += 1;
-      return acc;
-    },
-    { male: 0, female: 0 },
-  );
-  if (hostIncluded) {
-    const hg = String((plan as any).host?.gender || "").toLowerCase();
-    if (hg === "male") genderAggregate.male += 1;
-    else if (hg === "female") genderAggregate.female += 1;
-  }
+  const urgency = getUrgencySignal(isUnlimited, spotsLeft, joinedCount);
 
-  const urgency = getUrgencySignal(spotsLeft, joinedCount);
-
-  // Fake-but-plausible "recent join" signal derived deterministically from plan id
   const recentJoinName =
     joinedParticipants.length > 0
       ? (joinedParticipants[0] as any)?.user?.name?.split(" ")[0]
@@ -132,14 +125,17 @@ export function PlanCard({
     onToggleFavorite?.();
   };
 
-  const isOpen = effectiveStatus === "open" && spotsLeft > 0;
+  // 🔥 FIXED: unlimited should always be open
+  const isOpen =
+    effectiveStatus === "open" && (isUnlimited || (spotsLeft ?? 0) > 0);
+
   const categoryMeta =
     CATEGORY_META[plan.category as keyof typeof CATEGORY_META];
 
   return (
     <Link href={`/plans/${plan.id}`} className="block group">
       <article className="plan-card overflow-hidden rounded-[22px] bg-white">
-        {/* ── IMAGE ZONE ── */}
+        {/* IMAGE */}
         <div className="relative h-40 overflow-hidden bg-[#EAE0D5]">
           <img
             src={
@@ -150,7 +146,6 @@ export function PlanCard({
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
           />
 
-          {/* Multi-stop gradient for text legibility */}
           <div
             className="absolute inset-0"
             style={{
@@ -159,7 +154,7 @@ export function PlanCard({
             }}
           />
 
-          {/* Top-left: category chip */}
+          {/* CATEGORY */}
           <div className="absolute left-3 top-3">
             <div className="flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#2A1F1A] shadow-sm backdrop-blur-sm">
               <CategoryIcon
@@ -170,7 +165,7 @@ export function PlanCard({
             </div>
           </div>
 
-          {/* Top-right: status badge OR private */}
+          {/* STATUS */}
           <div className="absolute right-3 top-3 flex flex-col items-end gap-1.5">
             {(visibility === "invite_only" || visibility === "private") && (
               <div className="flex items-center gap-1 rounded-full bg-[#1a1410]/80 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
@@ -183,16 +178,17 @@ export function PlanCard({
                 Women only
               </div>
             )}
+
             {badge && effectiveStatus !== "open" && (
               <div
-                className={`rounded-full px-2.5 py-1 text-[10px] font-semibold backdrop-blur-sm ${badge.className}`}
+                className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${badge.className}`}
               >
                 {badge.text}
               </div>
             )}
           </div>
 
-          {/* Bottom-left: live activity signal */}
+          {/* LIVE JOIN */}
           {recentJoinName && joinedCount > 0 && (
             <div className="absolute bottom-3 left-3">
               <div className="flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 backdrop-blur-md">
@@ -205,7 +201,7 @@ export function PlanCard({
             </div>
           )}
 
-          {/* Bottom-right: heart */}
+          {/* HEART */}
           <button
             onClick={handleFavorite}
             className={`absolute bottom-3 right-3 heart-btn rounded-full p-2.5 shadow-lg backdrop-blur-sm transition-all ${
@@ -220,22 +216,17 @@ export function PlanCard({
           </button>
         </div>
 
-        {/* ── CONTENT ZONE ── */}
+        {/* CONTENT */}
         <div className="p-3">
-          {/* Title + date row */}
-          <h3 className="plan-title text-[15.5px] font-bold leading-snug text-[#1a1410] line-clamp-2 flex-1">
-            {plan.title}
-          </h3>
-          <div className="flex items-center justify-between mb-1.5">
-            <div className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#6e6258]">
-              <p className="text-[12px] font-bold ">{formatDate(planDate)}</p>
-              <p className="text-[11px] ">{formatTime(planDate)}</p>
+          <h3 className="text-[15px] font-bold line-clamp-2">{plan.title}</h3>
+
+          <div className="flex justify-between mt-2">
+            <div className="text-[12px]">
+              {formatDate(planDate)} • {formatTime(planDate)}
             </div>
-            {/* Urgency tag */}
+
             <UrgencyChip urgency={urgency} effectiveStatus={effectiveStatus} />
           </div>
-
-          {/* Divider */}
           <div className="my-2 h-px bg-[#F0E8DF]" />
 
           {/* Bottom row: cost + CTA */}
@@ -263,9 +254,13 @@ export function PlanCard({
               ) : (
                 <ActionPill
                   label={
-                    effectiveStatus === "open" && spotsLeft > 0
+                    isOpen
                       ? "Join plan"
-                      : statusLabel(spotsLeft === 0 ? "full" : effectiveStatus)
+                      : statusLabel(
+                          !isUnlimited && spotsLeft === 0
+                            ? "full"
+                            : effectiveStatus,
+                        )
                   }
                   variant={isOpen ? "join" : "disabled"}
                   disabled={!isOpen}

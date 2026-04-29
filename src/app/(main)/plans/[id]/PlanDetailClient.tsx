@@ -141,8 +141,14 @@ export default function PlanDetailClient({ initialPlan }: any) {
   }
   const participantCapacity = getParticipantCapacity(plan);
   const totalFilledCount = hostIncluded ? joinedCount + 1 : joinedCount;
-  const totalCapacity = Number(plan.max_people || 0);
-  const spotsOpen = Math.max(participantCapacity - joinedCount, 0);
+  const isUnlimited = plan.max_people === null;
+
+  const totalCapacity = isUnlimited ? null : Number(plan.max_people);
+
+  // IMPORTANT: unlimited should NOT calculate spots
+  const spotsOpen = isUnlimited
+    ? null
+    : Math.max(participantCapacity - joinedCount, 0);
   const effectiveStatus = computeEffectivePlanStatus(plan);
   const badge = statusBadge(effectiveStatus);
   const planDate = useMemo(
@@ -150,9 +156,9 @@ export default function PlanDetailClient({ initialPlan }: any) {
     [plan.datetime],
   );
   const fillPercent =
-    totalCapacity > 0
+    !isUnlimited && totalCapacity
       ? Math.round((totalFilledCount / totalCapacity) * 100)
-      : 0;
+      : null;
 
   const activeAmount = plan.final_amount
     ? Number(plan.final_amount)
@@ -389,7 +395,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
     }
     setReportBusy(false);
   };
-
+  const isHighFill = !isUnlimited && fillPercent !== null && fillPercent >= 80;
   const removeParticipant = async (userId: string) => {
     setBusy(`remove-${userId}`);
     const res = await fetch(`/api/plans/${plan.id}/remove-participant`, {
@@ -422,7 +428,9 @@ export default function PlanDetailClient({ initialPlan }: any) {
     if (navigator.share)
       navigator.share({
         title: plan.title,
-        text: `${spotsOpen} spot${spotsOpen === 1 ? "" : "s"} left`,
+        text: isUnlimited
+          ? `${totalFilledCount} people joined`
+          : `${spotsOpen} spot${spotsOpen === 1 ? "" : "s"} left`,
         url: shareUrl,
       });
     else copyLink();
@@ -1201,9 +1209,13 @@ export default function PlanDetailClient({ initialPlan }: any) {
               </div>
               <p className="pd-info-lbl">Group size</p>
               <p className="pd-info-val">
-                {totalFilledCount} / {totalCapacity} joined
+                {totalCapacity === null
+                  ? `${totalFilledCount} joined`
+                  : `${totalFilledCount} / ${totalCapacity} joined`}
               </p>
-              <p className="pd-info-sub">{spotsOpen} spots open</p>
+              <p className="pd-info-sub">
+                {isUnlimited ? "Unlimited" : `${spotsOpen} spots open`}
+              </p>
               <p className="pd-info-sub">
                 Host {hostIncluded ? "included" : "excluded"} in spots & split
               </p>
@@ -1239,12 +1251,16 @@ export default function PlanDetailClient({ initialPlan }: any) {
             >
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#1a1410" }}>
-                  {totalFilledCount} / {totalCapacity} total spots filled
+                  {isUnlimited
+                    ? `${totalFilledCount} people joined`
+                    : `${totalFilledCount} / ${totalCapacity} total spots filled`}
                 </p>
                 <p style={{ fontSize: 11, color: "#8b7b6d", marginTop: 1 }}>
-                  {spotsOpen === 0
-                    ? "Fully booked"
-                    : `${spotsOpen} ${spotsOpen === 1 ? "spot" : "spots"} left`}
+                  {isUnlimited
+                    ? "No limit"
+                    : spotsOpen === 0
+                      ? "Fully booked"
+                      : `${spotsOpen} ${spotsOpen === 1 ? "spot" : "spots"} left`}
                 </p>
                 {genderAggregate.male +
                   genderAggregate.female +
@@ -1262,20 +1278,24 @@ export default function PlanDetailClient({ initialPlan }: any) {
                 style={{
                   fontSize: 11,
                   fontWeight: 700,
-                  color: fillPercent >= 80 ? "#b45309" : "#166534",
-                  background: fillPercent >= 80 ? "#fef3c7" : "#dcfce7",
+                  color: isHighFill ? "#b45309" : "#166534",
+                  background: isHighFill ? "#fef3c7" : "#dcfce7",
                   padding: "3px 9px",
                   borderRadius: 100,
                 }}
               >
-                {fillPercent}% full
+                {isUnlimited ? "No limit" : `${fillPercent}% full`}
               </span>
             </div>
             <div className="pd-prog-track">
-              <div
-                className="pd-prog-fill"
-                style={{ width: `${fillPercent}%` }}
-              />
+              {!isUnlimited && (
+                <div className="pd-prog-track">
+                  <div
+                    className="pd-prog-fill"
+                    style={{ width: `${fillPercent}%` }}
+                  />
+                </div>
+              )}
             </div>
             {(isHost || isParticipant) && joinedParticipants.length > 0 && (
               <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
@@ -1666,7 +1686,7 @@ export default function PlanDetailClient({ initialPlan }: any) {
                   onClick={join}
                   disabled={
                     busy === "join" ||
-                    spotsOpen === 0 ||
+                    (!isUnlimited && spotsOpen === 0) ||
                     effectiveStatus !== "open" ||
                     (plan.female_only && currentUserGender !== "female")
                   }

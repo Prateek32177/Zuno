@@ -133,7 +133,10 @@ export async function POST(request: Request) {
     .eq("id", auth.user.id)
     .maybeSingle();
 
-  if (body.female_only && (hostProfile?.gender || "").toLowerCase() !== "female") {
+  if (
+    body.female_only &&
+    (hostProfile?.gender || "").toLowerCase() !== "female"
+  ) {
     return NextResponse.json(
       { error: "Women-only plans can only be hosted by women." },
       { status: 400 },
@@ -148,7 +151,8 @@ export async function POST(request: Request) {
     location_name: body.location_name,
     city,
     datetime: body.datetime,
-    max_people: Math.max(Number(body.max_people ?? 0), 0),
+    max_people:
+      body.max_people === null ? null : Math.max(Number(body.max_people), 1),
     whatsapp_link: (body.whatsapp_link || "").trim(),
     approval_mode: requireApproval,
     female_only: !!body.female_only,
